@@ -72,7 +72,7 @@ class SupportChatWidget {
           <div class="chat-header">
             <div class="chat-header-top">
               <div class="chat-header-brand">
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--color-gold, #d4af37)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="6 3 18 3 22 9 12 22 2 9"></polygon></svg>
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--chat-gold)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 6px;"><polygon points="6 3 18 3 22 9 12 22 2 9"></polygon></svg>
                 STRATMONT
               </div>
               <button class="chat-close-btn" id="chatCloseBtn">
@@ -290,7 +290,7 @@ class SupportChatWidget {
 
   togglePanel(forceState) {
     if (!this.token) {
-      window.location.href = 'auth.html';
+      window.location.href = 'login.html';
       return;
     }
     

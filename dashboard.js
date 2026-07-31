@@ -7,7 +7,7 @@ let selectedCoin = 'USDT';
 
 // ─── AUTH GUARD ───
 if (!token || !currentUser) {
-    window.location.href = 'auth.html';
+    window.location.href = 'login.html';
 }
 
 // ─── HELPERS ───
@@ -60,7 +60,7 @@ document.querySelectorAll('.nav-item').forEach(item => {
 // ─── LOGOUT ───
 document.getElementById('logoutBtn').addEventListener('click', () => {
     localStorage.clear();
-    window.location.href = 'auth.html';
+    window.location.href = 'login.html';
 });
 
 // ─── USER INFO ───
@@ -80,7 +80,7 @@ const loadDashboard = async () => {
         const res = await fetch(`${API}/user/dashboard`, {
             headers: { 'Authorization': `Bearer ${token}` }
         });
-        if (res.status === 401) { localStorage.clear(); window.location.href = 'auth.html'; return; }
+        if (res.status === 401) { localStorage.clear(); window.location.href = 'login.html'; return; }
         const data = await res.json();
         document.getElementById('availBalance').textContent = fmt(data.balances?.availableBalance);
         document.getElementById('totalDeposit').textContent = fmt(data.balances?.totalDeposit);

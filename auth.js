@@ -165,9 +165,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
             // Success, proceed
             if (currentMode === 'login') {
-                localStorage.setItem(window.STRATMONT_CONFIG?.TOKEN_KEY || 'stratmontToken', data.token);
-                localStorage.setItem(window.STRATMONT_CONFIG?.REFRESH_TOKEN_KEY || 'stratmontRefreshToken', data.refreshToken);
-                localStorage.setItem(window.STRATMONT_CONFIG?.USER_KEY || 'stratmontUser', JSON.stringify(data.user));
+                // If login is successful, they are verified. Store tokens and redirect.
+                localStorage.setItem('stratmont_token', data.token);
+                localStorage.setItem('stratmont_refresh', data.refreshToken);
                 window.location.href = 'dashboard.html';
                 return;
             } else {
@@ -267,13 +267,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
             // Success, save tokens and proceed to Step 3
             localStorage.setItem(window.STRATMONT_CONFIG?.TOKEN_KEY || 'stratmontToken', data.token);
-            localStorage.setItem(window.STRATMONT_CONFIG?.REFRESH_TOKEN_KEY || 'stratmontRefreshToken', data.refreshToken);
-            localStorage.setItem(window.STRATMONT_CONFIG?.USER_KEY || 'stratmontUser', JSON.stringify(data.user));
-            
+            if (data.refreshToken) localStorage.setItem(window.STRATMONT_CONFIG?.REFRESH_TOKEN_KEY || 'stratmontRefreshToken', data.refreshToken);
+            localStorage.setItem(window.STRATMONT_CONFIG?.USER_KEY || 'stratmontUser', JSON.stringify(data.user || data));
+
             showStep(stepSuccess);
+
+            // Redirect after 1.5s
             setTimeout(() => {
                 window.location.href = 'dashboard.html';
-            }, 2000);
+            }, 1500);
 
         } catch (error) {
             showAlert(error.message);

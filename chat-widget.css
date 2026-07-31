@@ -688,23 +688,3 @@ html[data-theme='light'] .chat-trigger-btn svg {
 html[data-theme='light'] .chat-trigger-btn:hover {
   box-shadow: 0 8px 28px rgba(0, 0, 0, 0.28), 0 0 0 3px rgba(26, 26, 46, 0.15);
 }
-
-html[data-theme='light'] .chat-header-brand {
-  color: #0f172a;
-}
-
-html[data-theme='light'] .chat-header-greeting h2 {
-  color: #0f172a;
-}
-
-html[data-theme='light'] .chat-header-greeting p {
-  color: #475569;
-}
-
-html[data-theme='light'] .chat-section-title {
-  color: #334155;
-}
-
-html[data-theme='light'] .chat-new-conversation-btn {
-  color: #0f172a;
-}
