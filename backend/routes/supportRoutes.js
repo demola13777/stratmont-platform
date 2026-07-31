@@ -7,9 +7,16 @@ const SupportTicket = require('../models/SupportTicket');
 const { protect } = require('../middleware/authMiddleware');
 
 // Ensure uploads directory exists
-const uploadDir = path.join(__dirname, '../uploads');
-if (!fs.existsSync(uploadDir)) {
-  fs.mkdirSync(uploadDir, { recursive: true });
+// Use /tmp in Vercel production to avoid read-only filesystem crashes
+const isVercel = process.env.NODE_ENV === 'production';
+const uploadDir = isVercel ? path.join('/tmp', 'uploads') : path.join(__dirname, '../uploads');
+
+try {
+  if (!fs.existsSync(uploadDir)) {
+    fs.mkdirSync(uploadDir, { recursive: true });
+  }
+} catch (error) {
+  console.warn('⚠️ Could not create uploads directory:', error.message);
 }
 
 // Configure multer storage
