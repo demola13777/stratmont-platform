@@ -5,10 +5,10 @@ let allTxData = [];
 let currentFilter = 'all';
 
 // ─── AUTH GUARD ───
-if (!token || !currentUser) { window.location.href = 'login.html'; }
+if (!token || !currentUser) { window.location.href = 'auth.html'; }
 if (currentUser?.role !== 'admin') {
     alert('Access denied. Admins only.');
-    window.location.href = 'login.html';
+    window.location.href = 'auth.html';
 }
 
 // ─── HELPERS ───
@@ -39,14 +39,14 @@ document.querySelectorAll('.nav-item').forEach(item => {
 // ─── LOGOUT ───
 document.getElementById('adminLogout').addEventListener('click', () => {
     localStorage.clear();
-    window.location.href = 'login.html';
+    window.location.href = 'auth.html';
 });
 
 // ─── LOAD STATS ───
 const loadStats = async () => {
     try {
         const res = await fetch(`${API}/admin/stats`, { headers: headers() });
-        if (res.status === 401 || res.status === 403) { localStorage.clear(); window.location.href = 'login.html'; return; }
+        if (res.status === 401 || res.status === 403) { localStorage.clear(); window.location.href = 'auth.html'; return; }
         const data = await res.json();
         document.getElementById('statUsers').textContent = data.totalUsers;
         document.getElementById('statDeposits').textContent = fmt(data.totalApprovedDeposits);
