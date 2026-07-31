@@ -20,7 +20,7 @@
 
 
 /* ─── LAYOUT ─── */
-.dashboard-layout { display:flex; min-height:100vh; }
+.dashboard-layout { display:flex; height:100vh; overflow: hidden; }
 
 /* ─── SIDEBAR ─── */
 .sidebar {
@@ -51,7 +51,15 @@
     padding: 1.5rem;
     border-bottom: 1px solid var(--border);
 }
-.sidebar-logo { font-size: 1.1rem; font-weight: 700; letter-spacing: 2px; color: var(--text-light); }
+.sidebar-logo { 
+    font-size: 1.1rem; 
+    font-family: var(--font-display, 'Inter', sans-serif);
+    font-weight: 700; 
+    letter-spacing: 2px; 
+    color: var(--text-light); 
+    display: flex;
+    align-items: center;
+}
 .sidebar-logo span, .sidebar-logo::first-letter { color: var(--gold); }
 .sidebar-close { display:none; background:none; border:none; color:var(--text-muted); font-size:1.2rem; cursor:pointer; }
 
@@ -63,18 +71,28 @@
     padding: 0.875rem 1.5rem;
     color: var(--text-muted);
     text-decoration: none;
-    font-size: 0.9rem;
+    font-size: 0.95rem;
     font-weight: 500;
     border-left: 3px solid transparent;
-    transition: all 0.2s;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 .nav-item:hover { color: var(--text-light); background: var(--bg-card-hover); }
+.nav-item:hover .nav-icon {
+    transform: translateX(4px);
+    color: var(--gold);
+}
 .nav-item.active {
     color: var(--gold);
     border-left-color: var(--gold);
-    background: linear-gradient(90deg, var(--gold-dim) 0%, transparent 100%);
+    background: linear-gradient(90deg, rgba(212, 175, 55, 0.12) 0%, transparent 100%);
+    font-weight: 600;
 }
-.nav-icon { font-size:1rem; width:20px; text-align:center; }
+.nav-icon { 
+    font-size:1.1rem; 
+    width:20px; 
+    text-align:center; 
+    transition: transform 0.3s ease, color 0.3s ease;
+}
 
 .sidebar-footer { padding: 1.5rem; border-top: 1px solid var(--border); }
 .logout-btn {
@@ -97,7 +115,8 @@
     margin-left: var(--sidebar-w);
     display: flex;
     flex-direction: column;
-    min-height: 100vh;
+    height: 100vh;
+    overflow: hidden;
     transition: margin-left 0.3s;
 }
 
@@ -126,7 +145,12 @@
 .user-name { font-size:0.875rem; color:var(--text-muted); }
 
 /* ─── CONTENT AREA ─── */
-.content-area { padding: 2rem; flex:1; }
+.content-area { 
+    padding: 2.5rem; 
+    flex: 1; 
+    overflow-y: auto;
+    scroll-behavior: smooth;
+}
 
 /* ─── VIEWS ─── */
 .view { display:none; }
@@ -163,6 +187,34 @@
 .stat-icon.green { background: rgba(16,185,129,0.15); color: var(--green); }
 .stat-body h4 { font-size:0.8rem; color:var(--text-muted); font-weight:400; margin-bottom:0.3rem; }
 .stat-body h2 { font-size:1.75rem; font-family: var(--font-display); font-weight:600; color: var(--text-light); }
+.live-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 10px;
+    background: rgba(16, 185, 129, 0.1);
+    border: 1px solid rgba(16, 185, 129, 0.25);
+    border-radius: 20px;
+    color: var(--green);
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    box-shadow: 0 0 10px rgba(16, 185, 129, 0.1);
+    margin-top: 4px;
+}
+.live-pill .pulse-dot {
+    width: 6px;
+    height: 6px;
+    background: var(--green);
+    border-radius: 50%;
+    box-shadow: 0 0 8px var(--green);
+    animation: pulse-glow 2s infinite;
+}
+@keyframes pulse-glow {
+    0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }
+    70% { transform: scale(1); box-shadow: 0 0 0 4px rgba(16, 185, 129, 0); }
+    100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+}
 .trend { font-size:0.75rem; color:var(--green); margin-top:0.25rem; display:block; }
 
 /* ─── SECTION CARDS ─── */
@@ -175,11 +227,24 @@
     backdrop-filter: blur(8px);
 }
 .section-title {
-    font-size: 1.25rem;
-    font-family: var(--font-display);
+    font-size: 1.15rem;
+    font-family: var(--font-display, 'Inter', sans-serif);
     font-weight: 600;
-    margin-bottom: 1.5rem;
     color: var(--text-light);
+    margin-bottom: 1.5rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid rgba(212, 175, 55, 0.15);
+    position: relative;
+    letter-spacing: 0.5px;
+}
+.section-title::after {
+    content: '';
+    position: absolute;
+    bottom: -1px;
+    left: 0;
+    width: 60px;
+    height: 2px;
+    background: linear-gradient(90deg, var(--gold), transparent);
 }
 
 /* ─── PLANS GRID ─── */

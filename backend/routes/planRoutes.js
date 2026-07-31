@@ -16,7 +16,7 @@ router.get('/', async (req, res) => {
                 `Daily ROI: ${p.dailyReturnRate}%`,
                 `Min: $${p.minDeposit.toLocaleString()}`,
                 `Max: $${p.maxDeposit.toLocaleString()}`,
-                `${p.durationDays}-Day Term`,
+                `3-Month Term (90 Days)`,
                 p.name === 'Institutional' ? 'Dedicated Manager' : (p.name === 'Professional' ? 'Priority Support' : 'Email Support')
             ];
             return planObj;
