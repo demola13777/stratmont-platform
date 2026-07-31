@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Authentication | Stratmont Investments</title>
+    <meta name="description" content="Secure portal to sign in or register for your Stratmont Capital investment account with 256-bit SSL encryption.">
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://stratmont.io/auth.html">
+    <meta property="og:title" content="Authentication | Stratmont Investments">
+    <meta property="og:description" content="Secure portal to sign in or register for your Stratmont Capital investment account with 256-bit SSL encryption.">
+    <meta property="og:image" content="https://stratmont.io/assets/og-auth.png">
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="https://stratmont.io/auth.html">
+    <meta property="twitter:title" content="Authentication | Stratmont Investments">
+    <meta property="twitter:description" content="Secure portal to sign in or register for your Stratmont Capital investment account with 256-bit SSL encryption.">
+    <meta property="twitter:image" content="https://stratmont.io/assets/og-auth.png">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="design-system.css">
+    <style>
+        body {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            background-color: var(--color-bg-primary, #050810);
+            overflow: hidden;
+            font-family: var(--font-sans, 'Inter', sans-serif);
+            color: var(--color-text-primary, #f8fafc);
+            margin: 0;
+            padding: 1rem;
+        }
+
+        .auth-bg-glow {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 100vw;
+            height: 100vh;
+            max-width: 800px;
+            max-height: 800px;
+            background: radial-gradient(circle, rgba(212,175,55,0.08) 0%, transparent 60%);
+            transform: translate(-50%, -50%);
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .auth-container {
+            width: 100%;
+            max-width: 480px;
+            position: relative;
+            z-index: 10;
+        }
+
+        .auth-card {
+            background: var(--color-bg-card, rgba(20, 25, 40, 0.6));
+            border: 1px solid var(--color-border-gold, rgba(212, 175, 55, 0.3));
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-radius: var(--radius-xl, 16px);
+            padding: 2.5rem;
+            box-shadow: var(--shadow-gold-lg, 0 8px 40px rgba(212,175,55,0.2));
+            position: relative;
+            overflow: hidden;
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        @media (max-width: 480px) {
+            .auth-card {
+                padding: 1.5rem;
+                border-radius: var(--radius-lg, 12px);
+            }
+        }
+
+        .auth-logo {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .auth-logo h1 {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: var(--color-text-primary, #f8fafc);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            margin: 0;
+        }
+
+        .auth-logo h1 span {
+            color: var(--color-gold, #d4af37);
+        }
+
+        .auth-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .auth-header h2 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(135deg, var(--color-gold-gradient-start, #d4af37), var(--color-gold-gradient-end, #b89324));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .auth-header p {
+            color: var(--color-text-muted, #94a3b8);
+            font-size: 0.95rem;
+            margin: 0;
+        }
+
+        .auth-form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .auth-form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: var(--color-text-muted, #94a3b8);
+        }
+
+        .auth-input {
+            width: 100%;
+            background: var(--color-bg-input, rgba(0, 0, 0, 0.2));
+            border: 1px solid var(--color-border, rgba(255, 255, 255, 0.06));
+            border-radius: var(--radius-md, 8px);
+            padding: 0.75rem 1rem;
+            color: var(--color-text-primary, #f8fafc);
+            font-family: inherit;
+            font-size: 1rem;
+            transition: all var(--transition-normal, 0.3s ease);
+            box-sizing: border-box;
+        }
+
+        .auth-input:focus {
+            outline: none;
+            border-color: var(--color-gold, #d4af37);
+            box-shadow: 0 0 0 2px var(--color-gold-dim, rgba(212, 175, 55, 0.15));
+        }
+
+        .password-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .toggle-password {
+            position: absolute;
+            right: 1rem;
+            background: none;
+            border: none;
+            color: var(--color-text-muted, #94a3b8);
+            cursor: pointer;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: color var(--transition-normal, 0.3s ease);
+        }
+
+        .toggle-password:hover {
+            color: var(--color-text-primary, #f8fafc);
+        }
+        
+        .password-wrapper .auth-input {
+            padding-right: 3rem; /* Space for the icon */
+        }
+
+        .auth-submit {
+            width: 100%;
+            background: linear-gradient(135deg, var(--color-gold-gradient-start, #d4af37), var(--color-gold-gradient-end, #b89324));
+            color: #000;
+            border: none;
+            padding: 0.875rem;
+            border-radius: var(--radius-md, 8px);
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all var(--transition-normal, 0.3s ease);
+            margin-top: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .auth-submit:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-gold, 0 4px 24px rgba(212,175,55,0.15));
+        }
+
+        .auth-submit:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .auth-switch {
+            text-align: center;
+            margin-top: 1.5rem;
+            font-size: 0.9rem;
+            color: var(--color-text-muted, #94a3b8);
+        }
+
+        .auth-switch a, .auth-link {
+            color: var(--color-gold, #d4af37);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color var(--transition-fast, 0.15s ease);
+            cursor: pointer;
+            background: none;
+            border: none;
+            padding: 0;
+            font-family: inherit;
+            font-size: inherit;
+        }
+
+        .auth-switch a:hover, .auth-link:hover {
+            color: #f8e1a0;
+            text-decoration: underline;
+        }
+        
+        .auth-link:disabled {
+            color: var(--color-text-muted, #94a3b8);
+            cursor: not-allowed;
+            text-decoration: none;
+        }
+
+        .alert {
+            padding: 1rem;
+            border-radius: var(--radius-md, 8px);
+            margin-bottom: 1.5rem;
+            display: none;
+            font-size: 0.9rem;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .alert.error {
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            color: var(--color-danger, #ef4444);
+        }
+
+        .alert.success {
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            color: var(--color-success, #10b981);
+        }
+
+        /* Step Management */
+        .step {
+            display: none;
+            animation: fadeIn 0.4s ease;
+        }
+
+        .step.active {
+            display: block;
+        }
+
+        /* Verification Step Styles */
+        .verification-code-container {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            margin: 2rem 0;
+        }
+
+        .digit-input {
+            width: 3.5rem;
+            height: 4rem;
+            font-size: 1.75rem;
+            text-align: center;
+            background: var(--color-bg-input, rgba(0, 0, 0, 0.2));
+            border: 1px solid var(--color-border, rgba(255, 255, 255, 0.06));
+            border-radius: var(--radius-md, 8px);
+            color: var(--color-text-primary, #f8fafc);
+            font-weight: 600;
+            transition: all 0.2s ease;
+        }
+
+        .digit-input:focus {
+            outline: none;
+            border-color: var(--color-gold, #d4af37);
+            box-shadow: 0 0 0 2px var(--color-gold-dim, rgba(212, 175, 55, 0.15));
+            transform: translateY(-2px);
+        }
+
+        .timer-text {
+            display: inline-block;
+            min-width: 40px;
+        }
+
+        /* Success Step Styles */
+        .success-animation {
+            text-align: center;
+            padding: 2rem 0;
+        }
+        
+        .success-icon {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--color-success, #10b981);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+            margin: 0 auto 1.5rem;
+            border: 2px solid var(--color-success, #10b981);
+            animation: scaleIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+            opacity: 0;
+            transform: scale(0.5);
+        }
+
+        @keyframes scaleIn {
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+    <script src="theme.js"></script>
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
+</head>
+<body>
+    <div class="auth-bg-glow"></div>
+
+    <div class="auth-container">
+        <div class="auth-card" aria-live="polite">
+            <div class="auth-logo">
+                <h1><svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="logo-icon text-gold" style="color: var(--color-gold); margin-right: 8px; vertical-align: text-bottom;"><polygon points="6 3 18 3 22 9 12 22 2 9"></polygon></svg> STRATMONT</h1>
+            </div>
+            
+            <div id="alertBox" class="alert" role="alert"></div>
+
+            <!-- STEP 1: CREDENTIALS -->
+            <div id="step-credentials" class="step active">
+                <div class="auth-header">
+                    <h2 id="auth-title">Welcome Back</h2>
+                    <p id="auth-subtitle">Sign in to access your portfolio</p>
+                </div>
+
+                <form id="credentialsForm" novalidate>
+                    <!-- Register Only Field -->
+                    <div class="auth-form-group" id="nameGroup" style="display: none;">
+                        <label for="fullName">Full Legal Name</label>
+                        <input type="text" id="fullName" class="auth-input" placeholder="John Doe" aria-label="Full Legal Name">
+                    </div>
+
+                    <div class="auth-form-group">
+                        <label for="email">Email Address</label>
+                        <input type="email" id="email" class="auth-input" placeholder="investor@example.com" required aria-label="Email Address" autocomplete="email">
+                    </div>
+                    
+                    <div class="auth-form-group">
+                        <label for="password">Password</label>
+                        <div class="password-wrapper">
+                            <input type="password" id="password" class="auth-input" placeholder="••••••••" required aria-label="Password" autocomplete="current-password">
+                            <button type="button" class="toggle-password" aria-label="Toggle password visibility">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="eye-icon"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="auth-form-group" id="confirmPasswordGroup" style="display: none;">
+                        <label for="confirmPassword">Confirm Password</label>
+                        <div class="password-wrapper">
+                            <input type="password" id="confirmPassword" class="auth-input" placeholder="••••••••" aria-label="Confirm Password" autocomplete="new-password">
+                            <button type="button" class="toggle-password" aria-label="Toggle confirm password visibility">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="eye-icon"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                            </button>
+                        </div>
+                    </div>
+
+                    <button type="submit" id="credentialsSubmit" class="auth-submit">Access Portal</button>
+                    
+                    <div class="auth-switch">
+                        <span id="switchText">Don't have an account?</span> 
+                        <button type="button" id="switchMode" class="auth-link">Register</button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- STEP 2: VERIFICATION -->
+            <div id="step-verification" class="step">
+                <div class="auth-header">
+                    <h2>Verify Your Identity</h2>
+                    <p>Enter the 4-digit code sent to <br><strong id="verifyEmailDisplay" class="text-gold"></strong></p>
+                </div>
+
+                <form id="verifyForm">
+                    <div class="verification-code-container">
+                        <input type="text" class="digit-input" maxlength="1" pattern="[0-9]" inputmode="numeric" aria-label="Digit 1" required autofocus>
+                        <input type="text" class="digit-input" maxlength="1" pattern="[0-9]" inputmode="numeric" aria-label="Digit 2" required>
+                        <input type="text" class="digit-input" maxlength="1" pattern="[0-9]" inputmode="numeric" aria-label="Digit 3" required>
+                        <input type="text" class="digit-input" maxlength="1" pattern="[0-9]" inputmode="numeric" aria-label="Digit 4" required>
+                    </div>
+
+                    <button type="submit" id="verifySubmit" class="auth-submit">Verify Identity</button>
+
+                    <div class="auth-switch" style="display: flex; flex-direction: column; gap: 0.75rem; margin-top: 2rem;">
+                        <div>
+                            Didn't receive the code? 
+                            <button type="button" id="resendCode" class="auth-link">Resend <span class="timer-text" id="resendTimer"></span></button>
+                        </div>
+                        <div>
+                            <button type="button" id="changeEmail" class="auth-link" style="color: var(--color-text-muted);">Use a different email</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+            <!-- STEP 3: SUCCESS -->
+            <div id="step-success" class="step">
+                <div class="success-animation">
+                    <div class="success-icon">✓</div>
+                    <div class="auth-header" style="margin-bottom: 0;">
+                        <h2>Authentication Successful</h2>
+                        <p>Preparing your secure portfolio environment...</p>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script src="config.js"></script>
+    <script src="auth.js"></script>
+</body>
+</html>

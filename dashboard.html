@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Investor Dashboard | Stratmont Investments</title>
+    <meta name="description" content="Monitor your Stratmont Capital investment portfolio, track real-time yield accruals, and manage deposits and withdrawals securely.">
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://stratmont.io/dashboard.html">
+    <meta property="og:title" content="Investor Dashboard | Stratmont Investments">
+    <meta property="og:description" content="Monitor your Stratmont Capital investment portfolio, track real-time yield accruals, and manage deposits and withdrawals securely.">
+    <meta property="og:image" content="https://stratmont.io/assets/og-dashboard.png">
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="https://stratmont.io/dashboard.html">
+    <meta property="twitter:title" content="Investor Dashboard | Stratmont Investments">
+    <meta property="twitter:description" content="Monitor your Stratmont Capital investment portfolio, track real-time yield accruals, and manage deposits and withdrawals securely.">
+    <meta property="twitter:image" content="https://stratmont.io/assets/og-dashboard.png">
+    <link rel="stylesheet" href="design-system.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="dashboard.css">
+    <link rel="stylesheet" href="chat-widget.css">
+    <link rel="stylesheet" href="style.css">
+    <script src="theme.js"></script>
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
+</head>
+<body>
+
+<div class="dashboard-layout">
+
+    <!-- Sidebar Overlay (mobile) -->
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <span class="sidebar-logo"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="logo-icon text-gold" style="color: var(--color-gold); margin-right: 8px; vertical-align: text-bottom;"><polygon points="6 3 18 3 22 9 12 22 2 9"></polygon></svg> STRATMONT</span>
+            <button class="sidebar-close" id="sidebarClose">✕</button>
+        </div>
+        <nav class="nav-links">
+            <a href="#" class="nav-item active" data-view="overview">
+                <span class="nav-icon">◈</span> Overview
+            </a>
+            <a href="#" class="nav-item" data-view="invest">
+                <span class="nav-icon">◆</span> Invest Now
+            </a>
+            <a href="#" class="nav-item" data-view="deposit">
+                <span class="nav-icon">↑</span> Make a Deposit
+            </a>
+            <a href="#" class="nav-item" data-view="withdraw">
+                <span class="nav-icon">↓</span> Withdraw Funds
+            </a>
+            <a href="#" class="nav-item" data-view="history">
+                <span class="nav-icon">☰</span> Transaction History
+            </a>
+        </nav>
+        <div class="sidebar-footer">
+            <button class="logout-btn" id="logoutBtn">⎋ Sign Out</button>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+
+        <!-- Topbar -->
+        <header class="topbar">
+            <button class="hamburger" id="hamburger">☰</button>
+            <div class="topbar-title" id="topbarTitle">Overview</div>
+            <div class="topbar-actions" style="display: flex; align-items: center; gap: 1rem; margin-left: auto; padding-right: 1rem;">
+                <button class="theme-toggle" id="dashThemeToggle" aria-label="Toggle dark/light mode">
+                    <span class="theme-toggle-thumb">
+                        <svg class="sun-icon" xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+                        <svg class="moon-icon" xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+                    </span>
+                </button>
+                <div class="user-profile">
+                    <div class="avatar" id="userAvatar">A</div>
+                    <span class="user-name" id="userNameDisplay">Investor</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- VIEWS -->
+        <div class="content-area">
+
+            <!-- ====== OVERVIEW VIEW ====== -->
+            <div class="view active" id="view-overview">
+                <div class="stats-grid">
+                    <div class="stat-card" style="position: relative; overflow: hidden;">
+                        <div style="position: absolute; top: 0; right: 0; bottom: 0; left: 0; background: linear-gradient(135deg, rgba(212,175,55,0.05), transparent); pointer-events: none;"></div>
+                        <div class="stat-icon gold">💰</div>
+                        <div class="stat-body">
+                            <h4>Available Balance</h4>
+                            <h2 id="availBalance" class="skeleton-text-placeholder">$0.00</h2>
+                        </div>
+                    </div>
+                    <div class="stat-card" style="position: relative; overflow: hidden;">
+                        <div style="position: absolute; top: 0; right: 0; bottom: 0; left: 0; background: linear-gradient(135deg, rgba(59,130,246,0.05), transparent); pointer-events: none;"></div>
+                        <div class="stat-icon blue">📈</div>
+                        <div class="stat-body">
+                            <h4>Total Deposited</h4>
+                            <h2 id="totalDeposit" class="skeleton-text-placeholder">$0.00</h2>
+                        </div>
+                    </div>
+                    <div class="stat-card" style="position: relative; overflow: hidden;">
+                        <div style="position: absolute; top: 0; right: 0; bottom: 0; left: 0; background: linear-gradient(135deg, rgba(16,185,129,0.05), transparent); pointer-events: none;"></div>
+                        <div class="stat-icon green">⚡</div>
+                        <div class="stat-body">
+                            <h4>Total Earnings</h4>
+                            <h2 id="totalEarnings" class="skeleton-text-placeholder">$0.00</h2>
+                            <span class="trend" style="background: rgba(16,185,129,0.1); color: var(--color-success); padding: 2px 6px; border-radius: 4px; font-size: 0.75rem; display: inline-flex; align-items: center; gap: 4px;"><span class="pulse-dot" style="width:6px;height:6px;background:var(--color-success);border-radius:50%;display:inline-block;animation:pulse 2s infinite;"></span> Live Compounding</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Active Plan Card -->
+                <div class="section-card">
+                    <h3 class="section-title">Active Investment Plan</h3>
+                    <div id="activePlanDisplay" class="plan-display-empty">
+                        <p>You have no active investment plan.</p>
+                        <button class="btn-gold" onclick="switchView('invest')">Browse Plans →</button>
+                    </div>
+                    <div id="upgradePromptContainer"></div>
+                </div>
+
+                <!-- Quick Recent Transactions -->
+                <div class="section-card">
+                    <h3 class="section-title">Recent Transactions</h3>
+                    <div id="recentTxList">
+                        <p class="empty-state">No transactions yet.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ====== INVEST NOW VIEW ====== -->
+            <div class="view" id="view-invest">
+                <p class="view-subtitle">Select a plan that matches your investment goals. All plans run on a 90 day compounding term.</p>
+                <div class="plans-grid" id="plansGrid">
+                    <!-- Plans loaded dynamically -->
+                    <div class="plan-skeleton"></div>
+                    <div class="plan-skeleton"></div>
+                    <div class="plan-skeleton"></div>
+                </div>
+            </div>
+
+            <!-- ====== DEPOSIT VIEW ====== -->
+            <div class="view" id="view-deposit">
+                <p class="view-subtitle">Send your funds to one of the wallet addresses below. After sending, submit your confirmation below.</p>
+
+                <!-- Coin Selector -->
+                <div class="coin-selector" id="coinSelector">
+                    <button class="coin-btn active" data-coin="USDT">USDT <span>TRC-20</span></button>
+                    <button class="coin-btn" data-coin="BTC">BTC <span>Bitcoin</span></button>
+                    <button class="coin-btn" data-coin="ETH">ETH <span>ERC-20</span></button>
+                </div>
+
+                <div class="section-card wallet-card">
+                    <div class="step-progress-bar" aria-label="Deposit progress">
+                        <div class="step-progress-track"></div>
+                        <div class="step-item active">
+                            <div class="step-bubble">1</div>
+                            <span class="step-label">Select Coin</span>
+                        </div>
+                        <div class="step-item">
+                            <div class="step-bubble">2</div>
+                            <span class="step-label">Send Funds</span>
+                        </div>
+                        <div class="step-item">
+                            <div class="step-bubble">3</div>
+                            <span class="step-label">Confirm Deposit</span>
+                        </div>
+                    </div>
+                    <div class="wallet-top">
+                        <div>
+                            <h4 class="wallet-label">Send <span id="selectedCoinLabel">USDT (TRC-20)</span> to this address:</h4>
+                            <div class="wallet-address-box">
+                                <span id="walletAddressDisplay">Loading...</span>
+                                <button class="copy-btn" id="copyWalletBtn" aria-label="Copy deposit address to clipboard">Copy</button>
+                            </div>
+                            <p class="wallet-warning">⚠ Only send the correct coin to this address. Wrong network = lost funds.</p>
+                        </div>
+                        <div class="qr-box">
+                            <img id="qrCodeImg" src="" alt="QR Code" width="140" height="140">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Deposit Confirmation Form -->
+                <div class="section-card">
+                    <h3 class="section-title">Confirm Your Deposit</h3>
+                    <div id="depositAlert" class="dash-alert" style="display:none;"></div>
+                    <form id="depositForm">
+                        <div class="form-group">
+                            <label>Select Investment Plan</label>
+                            <select id="depositPlanSelect" required>
+                                <option value="">   Choose a Plan   </option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Amount Sent (USD equivalent)</label>
+                            <input type="number" id="depositAmount" placeholder="e.g. 5000" min="1000" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Transaction Hash <span class="optional">(optional but recommended)</span></label>
+                            <input type="text" id="depositTxHash" placeholder="Paste your transaction hash here">
+                        </div>
+                        <button type="submit" class="btn-gold" id="depositSubmitBtn">Submit Deposit for Approval</button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- ====== WITHDRAW VIEW ====== -->
+            <div class="view" id="view-withdraw">
+                <p class="view-subtitle">Request a withdrawal of your available balance to your crypto wallet.</p>
+                <div class="section-card">
+                    <h3 class="section-title">Withdraw Funds</h3>
+                    <div id="withdrawAlert" class="dash-alert" style="display:none;"></div>
+                    
+                    <div id="withdrawLockOverlay" style="display:none; padding:20px; background:rgba(255,255,255,0.02); border-left:4px solid var(--gold); border-radius:8px; margin-bottom:20px;">
+                        <h4 style="color:var(--gold); margin-bottom:5px;">Withdrawals Locked</h4>
+                        <p style="color:var(--text-muted); font-size:0.9rem;">Your funds are currently locked in an active 90 day compounding cycle. Withdrawals will unlock once the cycle is completed.</p>
+                    </div>
+
+                    <form id="withdrawForm">
+                        <div class="form-group">
+                            <label>Select Withdrawal Coin</label>
+                            <select id="withdrawCoinSelect" required>
+                                <option value="USDT">USDT (TRC-20)</option>
+                                <option value="BTC">Bitcoin (BTC)</option>
+                                <option value="ETH">Ethereum (ERC-20)</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Withdrawal Amount (USD)</label>
+                            <input type="number" id="withdrawAmount" placeholder="e.g. 1000" required>
+                            <div style="font-size:0.8rem; color:var(--text-muted); margin-top:5px; text-align:right;">
+                                Available: <span id="withdrawMaxText">$0.00</span> 
+                                <a href="#" id="withdrawMaxBtn" style="color:var(--gold); cursor:pointer;">(Max)</a>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Destination Wallet Address</label>
+                            <input type="text" id="withdrawWalletAddress" placeholder="Enter your receiving wallet address" required>
+                        </div>
+                        <button type="submit" class="btn-gold" id="withdrawSubmitBtn">Submit Withdrawal Request</button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- ====== TRANSACTION HISTORY VIEW ====== -->
+            <div class="view" id="view-history">
+                <div class="section-card">
+                    <h3 class="section-title">Transaction History</h3>
+                    <div id="txTableWrapper">
+                        <p class="empty-state">Loading transactions...</p>
+                    </div>
+                </div>
+            </div>
+
+        </div><!-- /content-area -->
+    </main>
+</div>
+
+<script src="config.js"></script>
+<script src="dashboard.js"></script>
+    <script src="chat-widget.js"></script>
+</body>
+</html>

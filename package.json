@@ -1,0 +1,12 @@
+{
+  "name": "stratmont-investments",
+  "version": "1.0.0",
+  "description": "Premium Investment Platform UI",
+  "main": "index.html",
+  "scripts": {
+    "dev": "serve -p 3000"
+  },
+  "dependencies": {
+    "serve": "^14.2.1"
+  }
+}

@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Platform Documentation | Stratmont Investments</title>
+    <meta name="description" content="Stratmont Capital — Docs">
+    <meta property="og:title" content="Stratmont Capital">
+    <meta property="og:description" content="Stratmont Capital — Docs">
+    <meta property="og:type" content="website">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="design-system.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="pages.css">
+    <script src="config.js"></script>
+    <script src="theme.js"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
+</head>
+<body>
+    <header class="navbar" id="navbar">
+        <div class="container nav-container">
+            <a href="index.html" class="logo">
+                <i data-lucide="gem" class="logo-icon"></i>
+                <span>STRATMONT</span>
+            </a>
+            <nav class="nav-links">
+                <a href="about.html">About Firm</a>
+                <a href="index.html#portfolio">Our Portfolio</a>
+                <a href="index.html#plans">Investment Plans</a>
+                <a href="insights.html">Market Insights</a>
+            </nav>
+            <div class="nav-actions">
+                <button class="theme-toggle" aria-label="Toggle dark/light mode">
+    <span class="theme-toggle-thumb">
+        <svg class="sun-icon" xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+        <svg class="moon-icon" xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+    </span>
+</button>
+                <a href="auth.html" class="btn btn-outline">Client Portal</a>
+                <a href="auth.html" class="btn btn-primary">Become an Investor</a>
+            </div>
+            <button class="mobile-menu-btn" aria-label="Toggle Menu"><i data-lucide="menu"></i></button>
+        </div>
+    </header>
+
+    <main>
+        <section class="page-hero" style="padding-bottom: 2rem;">
+            <div class="container">
+                <div class="page-hero-breadcrumb">
+                    <a href="index.html">Home</a> <span>/</span> <span>Support</span> <span>/</span> <span>Documentation</span>
+                </div>
+                <h1>Platform <span class="highlight">Documentation</span></h1>
+                <p>Everything you need to know about investing with Stratmont. Clear, transparent, and straight to the point.</p>
+            </div>
+        </section>
+
+        <section class="section" style="padding-top: 2rem;">
+            <div class="container">
+                <div class="docs-layout">
+                    <aside class="docs-sidebar">
+                        <div class="docs-nav-group">
+                            <h5>Getting Started</h5>
+                            <a href="#how-it-works" class="docs-nav-link active">How the Platform Works</a>
+                            <a href="#account" class="docs-nav-link">Account Creation & Verification</a>
+                        </div>
+                        <div class="docs-nav-group">
+                            <h5>Managing Capital</h5>
+                            <a href="#deposits" class="docs-nav-link">Deposits & Funding</a>
+                            <a href="#withdrawals" class="docs-nav-link">Withdrawals & Lock Periods</a>
+                            <a href="#fees" class="docs-nav-link">Fees & Charges</a>
+                        </div>
+                        <div class="docs-nav-group">
+                            <h5>Strategy & Safety</h5>
+                            <a href="#strategies" class="docs-nav-link">Investment Strategies</a>
+                            <a href="#security" class="docs-nav-link">Security Measures</a>
+                        </div>
+                        <div class="docs-nav-group">
+                            <h5>Help Center</h5>
+                            <a href="#faq" class="docs-nav-link">Frequently Asked Questions</a>
+                            <a href="mailto:stratmontinvestmentinquires@hotmail.com" class="docs-nav-link" style="color: var(--gold-primary);"><i data-lucide="mail" style="width: 14px; height: 14px; display: inline; vertical-align: text-bottom;"></i> Contact Support</a>
+                        </div>
+                    </aside>
+                    
+                    <div class="docs-content">
+                        <h2 id="how-it-works">How the Platform Works</h2>
+                        <p>Stratmont operates as a collective investment platform. By pooling capital from thousands of clients, we gain the massive buying power required to access institutional grade assets like commercial real estate blocks, wholesale energy infrastructure, and private crypto deals.</p>
+                        <p>When you select an investment plan, your funds are aggregated into our master portfolio. Our trading desk and algorithms then actively manage this capital across global markets to generate yield.</p>
+                        <div class="info-box">
+                            <strong>Note:</strong> We manage the complexity. As a client, your only tasks are selecting a plan that fits your goals and deciding whether to compound your returns or withdraw them at the end of a cycle.
+                        </div>
+
+                        <h2 id="account">Account Creation & Verification</h2>
+                        <p>Opening an account takes less than three minutes. However, to comply with global Anti Money Laundering (AML) laws, full account verification is required before making significant withdrawals.</p>
+                        <h3>The Verification Process</h3>
+                        <ul>
+                            <li>Submit a government issued ID (Passport or Driver's License).</li>
+                            <li>Provide a recent proof of address (Utility bill or bank statement).</li>
+                            <li>Enable Two Factor Authentication (2FA) via Google Authenticator or SMS.</li>
+                        </ul>
+                        <p>Verification is typically completed within 24 hours.</p>
+
+                        <h2 id="deposits">Deposits & Funding</h2>
+                        <p>We support multiple funding methods to accommodate our global client base. Once deposited, your funds will appear in your 'Available Balance' immediately, allowing you to select an investment plan right away.</p>
+                        <ul>
+                            <li><strong>Cryptocurrency:</strong> We accept Bitcoin (BTC), Ethereum (ETH), and USDT. This is the fastest and most preferred method.</li>
+                            <li><strong>Bank Wire Transfer:</strong> Available for Institutional clients making deposits over $50,000.</li>
+                        </ul>
+
+                        <h2 id="withdrawals">Withdrawals & Lock Periods</h2>
+                        <p>To generate high yields, our capital must be actively deployed in the market. Because of this, all standard investment plans operate on a strict <strong>3-Month Cycle (90 Days)</strong>.</p>
+                        <h3>The 90 Day Rule</h3>
+                        <p>Once you commit funds to a plan, your capital is "locked" for exactly 90 days. During this time, your balance will grow daily, but you cannot withdraw the initial principal or the accrued interest.</p>
+                        <p>At the end of the 90 days, your cycle completes. You then have two choices:</p>
+                        <ol style="margin-left: 1.5rem; color: var(--text-muted); margin-bottom: 1.5rem;">
+                            <li style="margin-bottom: 0.5rem;"><strong>Withdraw:</strong> Request a payout of your initial capital plus all generated profits.</li>
+                            <li><strong>Reinvest:</strong> Roll your new, larger balance into a new 90 day cycle to leverage the power of compound interest.</li>
+                        </ol>
+                        <div class="warning-box">
+                            <strong>Early Withdrawals:</strong> Withdrawing funds before the 90 day cycle completes is generally not permitted, as it disrupts our market positions. Exceptions are only made in extreme emergencies and incur a severe penalty fee.
+                        </div>
+
+                        <h2 id="fees">Fees & Charges</h2>
+                        <p>We believe in performance based alignment. We don't charge you for making deposits or holding an account.</p>
+                        <ul>
+                            <li><strong>Deposit Fee:</strong> 0%</li>
+                            <li><strong>Account Maintenance Fee:</strong> 0%</li>
+                            <li><strong>Withdrawal Fee:</strong> 1.5% network coverage fee (for crypto payouts).</li>
+                        </ul>
+
+                        <h2 id="strategies">Investment Strategies</h2>
+                        <p>We diversify across three major pillars to protect against sector specific downturns:</p>
+                        <h3>1. Real Estate</h3>
+                        <p>Focusing on commercial properties in high demand global cities. Provides steady rental yield and acts as a strong hedge against inflation.</p>
+                        <h3>2. Oil & Gas</h3>
+                        <p>Taking positions in upstream extraction and midstream pipeline infrastructure. We use hedging contracts to lock in profit margins regardless of daily price swings.</p>
+                        <h3>3. Digital Assets</h3>
+                        <p>Algorithmic trading of Bitcoin and Ethereum, alongside DeFi yield farming. This is our highest growth sector, managed with strict stop loss protocols.</p>
+
+                        <h2 id="security">Security Measures</h2>
+                        <p>We treat security as an existential requirement, not a feature. Your assets are protected by multiple layers of defense.</p>
+                        <ul>
+                            <li><strong>Cold Storage:</strong> The vast majority of our digital assets are held offline in air gapped, multi signature wallets.</li>
+                            <li><strong>Encryption:</strong> All user data and platform communications are secured using AES 256 military grade encryption.</li>
+                            <li><strong>Audits:</strong> Our smart contracts and trading algorithms are regularly audited by independent cybersecurity firms.</li>
+                        </ul>
+
+                        <h2 id="faq">Frequently Asked Questions</h2>
+                        <div style="margin-top: 2rem;">
+                            
+                            <div class="faq-item">
+                                <button class="faq-question" onclick="this.parentElement.classList.toggle('open')">
+                                    Can I have multiple investment plans running at the same time?
+                                    <i data-lucide="chevron-down" class="faq-arrow"></i>
+                                </button>
+                                <div class="faq-answer">
+                                    Yes. You can make multiple deposits and start different plans at different times. Each plan will have its own independent 90 day countdown cycle.
+                                </div>
+                            </div>
+                            
+                            <div class="faq-item">
+                                <button class="faq-question" onclick="this.parentElement.classList.toggle('open')">
+                                    How is my daily profit calculated?
+                                    <i data-lucide="chevron-down" class="faq-arrow"></i>
+                                </button>
+                                <div class="faq-answer">
+                                    Your profit is calculated based on the specific 3-month total return percentage of the plan you selected. For example, a $10,000 deposit on a plan with a 200% return will generate $20,000 in profit over the 90-day period.
+                                </div>
+                            </div>
+                            
+                            <div class="faq-item">
+                                <button class="faq-question" onclick="this.parentElement.classList.toggle('open')">
+                                    What happens if I forget to withdraw after 90 days?
+                                    <i data-lucide="chevron-down" class="faq-arrow"></i>
+                                </button>
+                                <div class="faq-answer">
+                                    When your cycle ends, your funds sit safely in your Available Balance. They will not automatically lock into a new cycle, but they also will not generate any new daily returns until you actively reinvest them.
+                                </div>
+                            </div>
+                            
+                            <div class="faq-item">
+                                <button class="faq-question" onclick="this.parentElement.classList.toggle('open')">
+                                    Do I have to pay taxes on my profits?
+                                    <i data-lucide="chevron-down" class="faq-arrow"></i>
+                                </button>
+                                <div class="faq-answer">
+                                    Stratmont Investments does not automatically deduct taxes from your payouts. You are solely responsible for reporting and paying any applicable capital gains or income taxes according to the laws of your local jurisdiction.
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-brand">
+                    <div class="logo">
+                        <i data-lucide="gem" class="logo-icon text-gold"></i>
+                        <span>STRATMONT</span>
+                    </div>
+                    <p class="footer-desc">A premium global investment firm engineering wealth through strategic diversification across Real Estate, Oil & Gas, and Cryptocurrency.</p>
+                </div>
+                <div class="footer-links">
+                    <h4>Investments</h4>
+                    <ul>
+                        <li><a href="real-estate.html">Real Estate Portfolio</a></li>
+                        <li><a href="oil-gas.html">Oil & Gas Energy</a></li>
+                        <li><a href="digital-assets.html">Digital Assets</a></li>
+                        <li><a href="institutional.html">Institutional Services</a></li>
+                    </ul>
+                </div>
+                <div class="footer-links">
+                    <h4>Company</h4>
+                    <ul>
+                        <li><a href="about.html">About Us</a></li>
+                        <li><a href="leadership.html">Leadership</a></li>
+                        <li><a href="insights.html">Market Insights</a></li>
+                        <li><a href="careers.html">Careers</a></li>
+                    </ul>
+                </div>
+                <div class="footer-contact">
+                    <h4>Contact</h4>
+                    <ul>
+                        <li><i data-lucide="map-pin"></i> 150 Financial District, NY 10005</li>
+                        <li><i data-lucide="mail"></i> stratmontinvestmentinquires@hotmail.com</li>
+                        <li><i data-lucide="phone"></i> +1 (800) 555 0198</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <div class="copyright">© 2026 Stratmont Investments. All rights reserved.</div>
+                <div class="legal-links">
+                    <a href="privacy.html">Privacy Policy</a>
+                    <a href="terms.html">Terms of Service</a>
+                    <a href="risk-disclosure.html">Risk Disclosure</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+    <script>
+        lucide.createIcons();
+        
+        // Simple scroll spy for docs sidebar
+        document.addEventListener('DOMContentLoaded', () => {
+            const links = document.querySelectorAll('.docs nav link');
+            const sections = Array.from(links).map(link => {
+                const target = document.querySelector(link.getAttribute('href'));
+                return target;
+            }).filter(Boolean);
+            
+            window.addEventListener('scroll', () => {
+                let current = '';
+                sections.forEach(section => {
+                    const sectionTop = section.offsetTop;
+                    if (scrollY >= (sectionTop 150)) {
+                        current = section.getAttribute('id');
+                    }
+                });
+                
+                links.forEach(link => {
+                    link.classList.remove('active');
+                    if (link.getAttribute('href') === `#${current}`) {
+                        link.classList.add('active');
+                    }
+                });
+            });
+        });
+    </script>
+    <script src="main.js"></script>
+</body>
+</html>

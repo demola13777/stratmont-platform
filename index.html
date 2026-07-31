@@ -1,0 +1,734 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stratmont Investments | Premium Global Investment Management</title>
+    <meta name="description" content="Stratmont Capital offers structured 3-month wealth plans across Real Estate, Oil & Gas, and Digital Assets with institutional-grade risk management.">
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://stratmont.io/">
+    <meta property="og:title" content="Stratmont Investments | Premium Global Investment Management">
+    <meta property="og:description" content="Structured 3-month wealth plans across Real Estate, Oil & Gas, and Digital Assets with institutional-grade risk management.">
+    <meta property="og:image" content="https://stratmont.io/assets/og-preview.png">
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="https://stratmont.io/">
+    <meta property="twitter:title" content="Stratmont Investments | Premium Global Investment Management">
+    <meta property="twitter:description" content="Structured 3-month wealth plans across Real Estate, Oil & Gas, and Digital Assets with institutional-grade risk management.">
+    <meta property="twitter:image" content="https://stratmont.io/assets/og-preview.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="design-system.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css?v=2">
+    <script src="config.js"></script>
+    <script src="theme.js"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js" defer></script>
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
+</head>
+
+<body>
+    <!-- Navbar -->
+    <header class="navbar" id="navbar">
+        <div class="container nav-container">
+            <div class="logo">
+                <i data-lucide="gem" class="logo-icon"></i>
+                <span>STRATMONT</span>
+            </div>
+            <nav class="nav-links">
+                <a href="#about">About Firm</a>
+                <a href="#portfolio">Our Portfolio</a>
+                <a href="#plans">Investment Plans</a>
+                <a href="#insights">Market Insights</a>
+            </nav>
+            <div class="nav-actions">
+                <button class="theme-toggle" id="themeToggle" aria-label="Toggle dark/light mode">
+                    <span class="theme-toggle-thumb">
+                        <i data-lucide="sun" class="sun-icon"></i>
+                        <i data-lucide="moon" class="moon-icon"></i>
+                    </span>
+                </button>
+
+                <a href="auth.html" class="btn btn-outline">Client Portal</a>
+                <a href="auth.html" class="btn btn-primary">Become an Investor</a>
+            </div>
+            <button class="mobile-menu-btn" aria-label="Open mobile menu">
+                <i data-lucide="menu"></i>
+            </button>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="cursor-glow"></div>
+        <div class="hero-bg">
+            <div class="glow-orb orb-1"></div>
+            <div class="glow-orb orb-2"></div>
+        </div>
+        <div class="container hero-container">
+            <div class="hero-content">
+                <div class="badge">Institutional Grade Wealth Management</div>
+                <h1 class="hero-title">Securing Your Future Through <span>Strategic Diversification</span></h1>
+                <p class="hero-subtitle">Access exclusive, high yield opportunities in Real Estate, Oil & Gas, and Cryptocurrency. Engineered for capital preservation and accelerated growth.</p>
+                <div class="hero-cta-group mt-6">
+                    <a href="#plans" class="btn btn-primary btn-large" style="padding: 1rem 2rem; font-size: 1.125rem;">Explore Opportunities <i data-lucide="arrow-right"></i></a>
+                    <a href="#performance" class="btn btn-secondary btn-large" style="padding: 1rem 2rem; font-size: 1.125rem;">View Performance</a>
+                </div>
+                <div class="trust-indicators">
+                    <div class="trust-item">
+                        <div class="trust-val-wrapper">
+                            <span class="trust-value counter" data-target="2.4">2.4</span><span class="trust-suffix">B+</span>
+                        </div>
+                        <span class="trust-label">Assets Under Management</span>
+                    </div>
+                    <div class="trust-item">
+                        <div class="trust-val-wrapper">
+                            <span class="trust-value counter" data-target="150">150</span><span class="trust-suffix">+</span>
+                        </div>
+                        <span class="trust-label">Global Markets</span>
+                    </div>
+                    <div class="trust-item">
+                        <div class="trust-val-wrapper">
+                            <span class="trust-value counter" data-target="200">200</span><span class="trust-suffix">%</span>
+                        </div>
+                        <span class="trust-label">Avg. Quarterly Return</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Live Performance Ticker -->
+    <div class="market-ticker">
+        <div class="ticker-track">
+            <div class="ticker-item"><span class="asset">STRAT REIT</span> <span class="price">$142.50</span> <span class="change positive">+1.2%</span></div>
+            <div class="ticker-item"><span class="asset">GLOBAL O&G</span> <span class="price">$84.20</span> <span class="change positive">+0.8%</span></div>
+            <div class="ticker-item"><span class="asset">BTC/USD</span> <span class="price">$64,230</span> <span class="change positive">+2.4%</span></div>
+            <div class="ticker-item"><span class="asset">ETH/USD</span> <span class="price">$3,450</span> <span class="change negative"> 0.5%</span></div>
+            <div class="ticker-item"><span class="asset">STRAT YIELD</span> <span class="price">$105.10</span> <span class="change positive">+0.3%</span></div>
+            <!-- Duplicate for seamless scroll -->
+            <div class="ticker-item"><span class="asset">STRAT REIT</span> <span class="price">$142.50</span> <span class="change positive">+1.2%</span></div>
+            <div class="ticker-item"><span class="asset">GLOBAL O&G</span> <span class="price">$84.20</span> <span class="change positive">+0.8%</span></div>
+            <div class="ticker-item"><span class="asset">BTC/USD</span> <span class="price">$64,230</span> <span class="change positive">+2.4%</span></div>
+            <div class="ticker-item"><span class="asset">ETH/USD</span> <span class="price">$3,450</span> <span class="change negative"> 0.5%</span></div>
+            <div class="ticker-item"><span class="asset">STRAT YIELD</span> <span class="price">$105.10</span> <span class="change positive">+0.3%</span></div>
+        </div>
+    </div>
+
+    <!-- About Section -->
+    <section id="about" class="about section reveal">
+        <div class="container about-container">
+            <div class="about-image-wrapper reveal">
+                <div class="glass-card absolute-stat">
+                    <i data-lucide="shield-check" class="text-gold"></i>
+                    <div>
+                        <h4>Regulated Entity</h4>
+                        <p>Fully compliant in all jurisdictions</p>
+                    </div>
+                </div>
+                <div class="image-placeholder">
+                    <img src="real-estate.png" alt="Corporate Building" class="main-image">
+                </div>
+            </div>
+            <div class="about-content">
+                <div class="section-badge">About Stratmont</div>
+                <h2 class="section-title">A Legacy of Financial Excellence</h2>
+                <p class="section-description">At Stratmont Investments, we bridge the gap between traditional finance and emerging asset classes. Our mandate is to provide our clients with unparalleled access to meticulously vetted investment vehicles across Real Estate, Oil & Gas, and Cryptocurrency markets.</p>
+                <p class="section-description">Backed by decades of institutional expertise, our algorithmic trading models and rigorous risk management protocols ensure your capital is positioned for optimal growth and absolute resilience in any market condition.</p>
+                
+                <ul class="feature-list">
+                    <li><i data-lucide="check-circle-2"></i> Institutional grade risk management</li>
+                    <li><i data-lucide="check-circle-2"></i> Transparent fee structure with no hidden costs</li>
+                    <li><i data-lucide="check-circle-2"></i> Dedicated wealth advisory team</li>
+                </ul>
+                <a href="#" class="btn btn-outline mt-4">Discover Our Heritage</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Investment Categories -->
+    <section id="portfolio" class="categories section bg-darker">
+        <div class="container">
+            <div class="section-header text-center">
+                <div class="section-badge">Our Portfolio</div>
+                <h2 class="section-title">Diversified Investment Verticals</h2>
+                <p class="section-description mx-auto">Strategic allocation across three high performing sectors, designed to balance volatility and maximize absolute returns.</p>
+            </div>
+            
+            <div class="category-grid">
+                <!-- Category 1 -->
+                <div class="category-card reveal">
+                    <div class="card-image">
+                        <img loading="lazy" src="real-estate.png" alt="Real Estate">
+                    </div>
+                    <div class="card-content">
+                        <div class="card-icon"><i data-lucide="building"></i></div>
+                        <h3>Real Estate</h3>
+                        <p>Prime commercial and residential properties in high growth global hubs. Generating consistent rental yields and long term capital appreciation.</p>
+                        <div class="card-stats">
+                            <div class="stat"><span class="value">150%</span><span class="label">3-Month Target</span></div>
+                            <div class="stat"><span class="value">Low</span><span class="label">Volatility</span></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Category 2 -->
+                <div class="category-card reveal" style="transition-delay: 0.1s">
+                    <div class="card-image">
+                        <img loading="lazy" src="oil-and-gas.png" alt="Oil & Gas">
+                    </div>
+                    <div class="card-content">
+                        <div class="card-icon"><i data-lucide="flame"></i></div>
+                        <h3>Oil & Gas</h3>
+                        <p>Direct participation in highly vetted energy exploration and production projects. Benefiting from global demand and strategic resource scarcity.</p>
+                        <div class="card-stats">
+                            <div class="stat"><span class="value">200%</span><span class="label">3-Month Target</span></div>
+                            <div class="stat"><span class="value">Medium</span><span class="label">Volatility</span></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Category 3 -->
+                <div class="category-card reveal" style="transition-delay: 0.2s">
+                    <div class="card-image">
+                        <img loading="lazy" src="cryptocurrency.jpg" alt="Cryptocurrency">
+                    </div>
+                    <div class="card-content">
+                        <div class="card-icon"><i data-lucide="bitcoin"></i></div>
+                        <h3>Cryptocurrency</h3>
+                        <p>Algorithmic trading and strategic holding of blue chip digital assets. Capturing alpha in the world's fastest growing financial market.</p>
+                        <div class="card-stats">
+                            <div class="stat"><span class="value">300%</span><span class="label">3-Month Target</span></div>
+                            <div class="stat"><span class="value">High</span><span class="label">Volatility</span></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Investment Plans -->
+    <section id="plans" class="plans section">
+        <div class="container">
+            <div class="section-header text-center">
+                <div class="section-badge">Opportunities</div>
+                <h2 class="section-title">Structured Wealth Plans</h2>
+                <p class="section-description mx-auto">Select a tier that aligns with your capital availability and financial objectives.</p>
+            </div>
+
+            <div class="plans-grid">
+                <!-- Plan 1 -->
+                <div class="plan-card">
+                    <div class="plan-header" style="padding: 2rem 1.5rem; border-bottom: 1px solid var(--color-border); text-align: center;">
+                        <h3 style="font-size: var(--text-2xl); margin-bottom: 0.5rem;">Starter Plan</h3>
+                        <p class="text-muted" style="margin-bottom: 1rem;">Stable daily returns for emerging investors.</p>
+                        <div class="plan-price" style="margin: 1.5rem 0;">
+                            <span class="amount text-gold" style="font-size: var(--text-5xl); font-weight: 700; display: block;">150%</span>
+                        </div>
+                    </div>
+                    <div class="plan-body" style="padding: 1.5rem;">
+                        <ul class="plan-features">
+                            <li><i data-lucide="arrow-right-circle"></i> <strong>Min Deposit:</strong> $1,000</li>
+                            <li><i data-lucide="arrow-right-circle"></i> <strong>Max Deposit:</strong> $9,999</li>
+                            <li><i data-lucide="arrow-right-circle"></i> <strong>Duration:</strong> 3 Months (90 Days)</li>
+                            <li><i data-lucide="arrow-right-circle"></i> <strong>Principal:</strong> Included</li>
+                            <li><i data-lucide="arrow-right-circle"></i> <strong>Withdrawals:</strong> At Maturity</li>
+                        </ul>
+                    </div>
+                    <div class="plan-footer">
+                        <a href="auth.html" class="btn btn-outline btn-full">Invest Now</a>
+                    </div>
+                </div>
+
+                <!-- Plan 2 -->
+                <div class="plan-card featured">
+                    <div class="featured-badge">Most Popular</div>
+                    <div class="plan-header" style="padding: 2rem 1.5rem; border-bottom: 1px solid var(--color-border); text-align: center;">
+                        <h3 style="font-size: var(--text-2xl); margin-bottom: 0.5rem;">Professional Plan</h3>
+                        <p class="text-muted" style="margin-bottom: 1rem;">Advanced diversification for established portfolios.</p>
+                        <div class="plan-price" style="margin: 1.5rem 0;">
+                            <span class="amount text-gold" style="font-size: var(--text-5xl); font-weight: 700; display: block;">200%</span>
+                        </div>
+                    </div>
+                    <div class="plan-body" style="padding: 1.5rem;">
+                        <ul class="plan-features">
+                            <li><i data-lucide="arrow-right-circle"></i> <strong>Min Deposit:</strong> $10,000</li>
+                            <li><i data-lucide="arrow-right-circle"></i> <strong>Max Deposit:</strong> $49,999</li>
+                            <li><i data-lucide="arrow-right-circle"></i> <strong>Duration:</strong> 3 Months (90 Days)</li>
+                            <li><i data-lucide="arrow-right-circle"></i> <strong>Principal:</strong> Included</li>
+                            <li><i data-lucide="arrow-right-circle"></i> <strong>Withdrawals:</strong> At Maturity</li>
+                        </ul>
+                    </div>
+                    <div class="plan-footer">
+                        <a href="auth.html" class="btn btn-primary btn-full">Invest Now</a>
+                    </div>
+                </div>
+
+                <!-- Plan 3 -->
+                <div class="plan-card">
+                    <div class="plan-header" style="padding: 2rem 1.5rem; border-bottom: 1px solid var(--color-border); text-align: center;">
+                        <h3 style="font-size: var(--text-2xl); margin-bottom: 0.5rem;">Institutional</h3>
+                        <p class="text-muted" style="margin-bottom: 1rem;">Bespoke strategies for high net worth individuals.</p>
+                        <div class="plan-price" style="margin: 1.5rem 0;">
+                            <span class="amount text-gold" style="font-size: var(--text-5xl); font-weight: 700; display: block;">300%</span>
+                        </div>
+                    </div>
+                    <div class="plan-body" style="padding: 1.5rem;">
+                        <ul class="plan-features">
+                            <li><i data-lucide="arrow-right-circle"></i> <strong>Min Deposit:</strong> $50,000</li>
+                            <li><i data-lucide="arrow-right-circle"></i> <strong>Max Deposit:</strong> $150,000</li>
+                            <li><i data-lucide="arrow-right-circle"></i> <strong>Duration:</strong> 3 Months (90 Days)</li>
+                            <li><i data-lucide="arrow-right-circle"></i> <strong>Principal:</strong> Included</li>
+                            <li><i data-lucide="arrow-right-circle"></i> <strong>Withdrawals:</strong> At Maturity</li>
+                        </ul>
+                    </div>
+                    <div class="plan-footer">
+                        <a href="auth.html" class="btn btn-outline btn-full">Invest Now</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Interactive Calculator -->
+            <div class="roi-calculator reveal mt-4">
+                <div class="calculator-glass">
+                    <div class="calc-header">
+                        <h3>Capital Growth Projection</h3>
+                        <p>Model your potential yield trajectory based on initial capital deposit.</p>
+                    </div>
+                    <div class="calc-body">
+                        <div class="calc-slider-area">
+                            <div class="calc-tier-header">
+                                <div class="calc-tier-info">
+                                    <div class="tier-icon-badge">
+                                        <i data-lucide="award"></i>
+                                    </div>
+                                    <div class="tier-text-group">
+                                        <span class="calc-tier-label">Active Investment Tier</span>
+                                        <span class="calc-tier-subtitle">Yield calculation rate unlocked</span>
+                                    </div>
+                                </div>
+                                <span id="calcTierBadge" class="tier-badge">Starter Tier</span>
+                            </div>
+                            <input type="range" id="roiSlider" class="custom-slider" min="1000" max="150000" step="1000" value="10000">
+                            <div class="slider-labels">
+                                <span>$1,000 (Min)</span>
+                                <span>$150,000 (Max)</span>
+                            </div>
+                            <div class="current-deposit">
+                                <span>Initial Deposit:</span>
+                                <div class="deposit-val-display" id="calcDepositVal" role="status" aria-live="polite">$10,000</div>
+                            </div>
+                        </div>
+                        <div class="calc-results">
+                            <div class="result-box">
+                                <span class="result-label">Daily Return</span>
+                                <h4 id="calcDailyVal" class="text-gold">$800</h4>
+                            </div>
+                            <div class="result-box">
+                                <span class="result-label">3-Month Return</span>
+                                <h4 id="calcMonthlyVal" class="text-gold">$24,000</h4>
+                            </div>
+                            <div class="result-box highlighted">
+                                <span class="result-label">90 Day Total (Inc. Principal)</span>
+                                <h3 id="calcTotalVal" class="text-green">$34,000</h3>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Dashboard Preview -->
+    <section id="performance" class="dashboard-preview section bg-darker overflow-hidden">
+        <div class="container dashboard-container">
+            <div class="dashboard-content">
+                <div class="section-badge">Live Technology</div>
+                <h2 class="section-title">Unprecedented Transparency</h2>
+                <p class="section-description">Our proprietary client portal provides real time oversight of your assets. Track daily performance, analyze sector allocation, and withdraw dividends with zero friction.</p>
+                
+                <div class="metrics-grid mt-4">
+                    <div class="metric reveal">
+                        <h4>Real Time Sync</h4>
+                        <p>Millisecond level market data updates.</p>
+                    </div>
+                    <div class="metric reveal" style="transition-delay: 0.1s">
+                        <h4>Bank Grade Security</h4>
+                        <p>AES 256 encryption & cold storage.</p>
+                    </div>
+                </div>
+
+                <!-- Activity Feed -->
+                <div class="activity-feed reveal mt-4">
+                    <div class="feed-header">
+                        <div class="live-indicator"><span class="pulse"></span> Live Feeds</div>
+                    </div>
+                    <div class="feed-list" id="activityFeedList">
+                        <!-- Populated by JS -->
+                    </div>
+                </div>
+            </div>
+            <div class="dashboard-visual">
+                <div class="glass-panel mockup-window">
+                    <div class="mockup-header">
+                        <div class="dots">
+                            <span></span><span></span><span></span>
+                        </div>
+                        <div class="mockup-title">Stratmont Portal</div>
+                    </div>
+                    <div class="mockup-body">
+                        <div class="mockup-sidebar">
+                            <div class="mockup-nav-item active"></div>
+                            <div class="mockup-nav-item"></div>
+                            <div class="mockup-nav-item"></div>
+                        </div>
+                        <div class="mockup-main">
+                            <div class="mockup-top-cards">
+                                <div class="m-card">
+                                    <span class="m-label">Total Balance</span>
+                                    <span class="m-value">$142,500.00</span>
+                                </div>
+                                <div class="m-card">
+                                    <span class="m-label">Total Profit</span>
+                                    <span class="m-value text-green">+$12,450.20</span>
+                                </div>
+                            </div>
+                            <div class="mockup-chart-container">
+                                <canvas id="mockupChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Why Choose Us -->
+    <section class="why-us section">
+        <div class="container">
+            <div class="section-header text-center">
+                <h2 class="section-title">The Stratmont Advantage</h2>
+            </div>
+            
+            <div class="advantages-grid">
+                <div class="advantage-card">
+                    <div class="icon-wrapper"><i data-lucide="bar-chart-3"></i></div>
+                    <h4>Data Driven Decisions</h4>
+                    <p>Our quantitative analysts utilize proprietary AI models to identify market inefficiencies before they become mainstream trends.</p>
+                </div>
+                <div class="advantage-card">
+                    <div class="icon-wrapper"><i data-lucide="scale"></i></div>
+                    <h4>Asymmetric Risk</h4>
+                    <p>We structure our investments to provide outsized upside potential while strictly capping downside exposure.</p>
+                </div>
+                <div class="advantage-card">
+                    <div class="icon-wrapper"><i data-lucide="globe-2"></i></div>
+                    <h4>Global Footprint</h4>
+                    <p>Local expertise across 15+ countries allows us to navigate regulatory landscapes and source exclusive off market deals.</p>
+                </div>
+                <div class="advantage-card">
+                    <div class="icon-wrapper"><i data-lucide="users"></i></div>
+                    <h4>Aligned Interests</h4>
+                    <p>Our partners invest their own capital alongside our clients, ensuring our objectives are fundamentally intertwined.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Security & Compliance -->
+    <section class="security section bg-darker">
+        <div class="container security-container">
+            <div class="security-image">
+                <div class="shield-container">
+                    <i data-lucide="shield" class="giant-shield"></i>
+                    <div class="orbit">
+                        <i data-lucide="lock" class="orbit-icon icon-1"></i>
+                        <i data-lucide="file-check" class="orbit-icon icon-2"></i>
+                        <i data-lucide="server" class="orbit-icon icon-3"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="security-content">
+                <div class="section-badge">Protection</div>
+                <h2 class="section-title">Fortified Capital Protection</h2>
+                <p class="section-description">We employ military grade security infrastructure and operate strictly within global regulatory frameworks to ensure your assets are impenetrable.</p>
+                
+                <div class="security-list">
+                    <div class="sec-item">
+                        <i data-lucide="check" class="text-gold"></i>
+                        <div>
+                            <strong>Regulatory Compliance</strong>
+                            <span>Registered with SEC, FCA, and ASIC equivalent authorities.</span>
+                        </div>
+                    </div>
+                    <div class="sec-item">
+                        <i data-lucide="check" class="text-gold"></i>
+                        <div>
+                            <strong>Asset Segregation</strong>
+                            <span>Client funds are held in independent, top tier banking institutions.</span>
+                        </div>
+                    </div>
+                    <div class="sec-item">
+                        <i data-lucide="check" class="text-gold"></i>
+                        <div>
+                            <strong>Insurance Coverage</strong>
+                            <span>Digital assets covered by comprehensive $250M insurance policies.</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonials -->
+    <section class="testimonials section">
+        <div class="container">
+            <div class="section-header text-center">
+                <div class="section-badge">Client Success</div>
+                <h2 class="section-title">Trusted by Visionaries</h2>
+            </div>
+
+            <div class="testimonial-grid">
+                <div class="testimonial-card">
+                    <div class="quote-icon"><i data-lucide="quote"></i></div>
+                    <p class="testimonial-text">"Stratmont's approach to wealth management is refreshingly transparent. Their Real Estate portfolio has provided me with consistent passive income that outperformed my traditional equity holdings."</p>
+                    <div class="testimonial-author">
+                        <img loading="lazy" src="edward.jpeg" alt="Edward J." class="author-avatar-img">
+                        <div class="author-info">
+                            <h4>Edward J.</h4>
+                            <span>Corporate Executive</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="testimonial-card">
+                    <div class="quote-icon"><i data-lucide="quote"></i></div>
+                    <p class="testimonial-text">"As someone skeptical of cryptocurrency, Stratmont's risk adjusted strategy gave me the confidence to diversify. The execution and quarterly reporting are absolutely world class."</p>
+                    <div class="testimonial-author">
+                        <img loading="lazy" src="sarah.jpeg" alt="Sarah M." class="author-avatar-img">
+                        <div class="author-info">
+                            <h4>Sarah M.</h4>
+                            <span>Venture Capitalist</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="testimonial-card">
+                    <div class="quote-icon"><i data-lucide="quote"></i></div>
+                    <p class="testimonial-text">"The Oil & Gas vertical has delivered remarkable yields. Having a dedicated wealth manager who actually understands macro economic cycles has been invaluable to my family office."</p>
+                    <div class="testimonial-author">
+                        <img loading="lazy" src="charlotte-d.jpeg" alt="Charlotte D." class="author-avatar-img">
+                        <div class="author-info">
+                            <h4>Charlotte D.</h4>
+                            <span>Family Office Director</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FAQ -->
+    <section class="faq section bg-darker">
+        <div class="container faq-container">
+            <div class="faq-header">
+                <h2 class="section-title">Frequently Asked Questions</h2>
+                <p class="section-description">Clear answers to your most important considerations.</p>
+                <a href="docs.html" class="btn btn-outline mt-3">View Documentation</a>
+            </div>
+            <div class="faq-accordion">
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <h3>How does Stratmont mitigate risk in cryptocurrency?</h3>
+                        <i data-lucide="chevron-down"></i>
+                    </div>
+                    <div class="faq-answer">
+                        <p>We utilize delta neutral strategies, rigorous cold storage protocols, and limit our exposure solely to highly liquid, top tier digital assets. Our algorithmic models employ automated stop loss mechanisms to cap drawdowns.</p>
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <h3>What is the lock up period for investments?</h3>
+                        <i data-lucide="chevron-down"></i>
+                    </div>
+                    <div class="faq-answer">
+                        <p>Lock up periods vary by asset class. Cryptocurrency funds have a 90 day lock up, while Real Estate and Oil & Gas typically require a 12 to 24 month commitment due to the illiquid nature of the underlying physical assets.</p>
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <h3>How are dividends and profits distributed?</h3>
+                        <i data-lucide="chevron-down"></i>
+                    </div>
+                    <div class="faq-answer">
+                        <p>Depending on your chosen tier, profits are calculated and distributed at maturity of the 3-month cycle. Clients can choose to automatically reinvest dividends for compound growth or withdraw them directly to their linked bank accounts or crypto wallets.</p>
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <h3>Is Stratmont open to international investors?</h3>
+                        <i data-lucide="chevron-down"></i>
+                    </div>
+                    <div class="faq-answer">
+                        <p>Yes, we operate globally and accept clients from most jurisdictions, subject to successful completion of our strict KYC (Know Your Customer) and AML (Anti Money Laundering) verification processes.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta-section section">
+        <div class="cta-background"></div>
+        <div class="container text-center relative z-10">
+            <h2 class="cta-title">Ready to Elevate Your Portfolio?</h2>
+            <p class="cta-description">Join an exclusive network of investors executing high yield strategies across global markets.</p>
+            <div class="cta-buttons">
+                <a href="auth.html" class="btn btn-primary btn-large">Create an Account</a>
+                <a href="mailto:stratmontinvestmentinquires@hotmail.com" class="btn btn-outline btn-large bg-dark">Contact Support</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Newsletter Section -->
+    <section class="newsletter section">
+        <div class="container">
+            <div class="newsletter-banner card-elevated">
+                <div class="newsletter-badge">
+                    <i data-lucide="shield-check" class="text-gold"></i>
+                    <span>Institutional Intelligence</span>
+                </div>
+                <h2 class="section-title mb-3">Stay Ahead of Market Cycles</h2>
+                <p class="section-description mx-auto mb-6" style="max-width: 600px;">
+                    Receive weekly institutional research, macroeconomic commentary, and early notification of private market offerings directly to your inbox.
+                </p>
+                <form class="newsletter-form-elevated" onsubmit="event.preventDefault(); alert('Thank you for subscribing to Stratmont Market Insights.');">
+                    <div class="newsletter-input-group">
+                        <i data-lucide="mail" class="newsletter-icon"></i>
+                        <input type="email" placeholder="Enter your business or personal email..." required aria-label="Email address for market insights">
+                        <button type="submit" class="btn btn-primary">Subscribe <i data-lucide="arrow-right"></i></button>
+                    </div>
+                </form>
+                <div class="newsletter-trust-row">
+                    <span><i data-lucide="lock" style="width:14px;height:14px;"></i> 256-bit encryption</span>
+                    <span>•</span>
+                    <span>No spam. Unsubscribe anytime.</span>
+                    <span>•</span>
+                    <span>Over 14,000+ investors</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-brand">
+                    <div class="logo">
+                        <i data-lucide="gem" class="logo-icon text-gold"></i>
+                        <span>STRATMONT</span>
+                    </div>
+                    <p class="footer-desc">A premium global investment firm engineering wealth through strategic diversification across Real Estate, Oil & Gas, and Cryptocurrency.</p>
+                </div>
+                
+                <div class="footer-links">
+                    <h4>Investments</h4>
+                    <ul>
+                        <li><a href="real-estate.html">Real Estate Portfolio</a></li>
+                        <li><a href="oil-gas.html">Oil & Gas Energy</a></li>
+                        <li><a href="digital-assets.html">Digital Assets</a></li>
+                        <li><a href="institutional.html">Institutional Services</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-links">
+                    <h4>Company</h4>
+                    <ul>
+                        <li><a href="about.html">About Us</a></li>
+                        <li><a href="leadership.html">Leadership</a></li>
+                        <li><a href="insights.html">Market Insights</a></li>
+                        <li><a href="careers.html">Careers</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-contact">
+                    <h4>Contact</h4>
+                    <ul>
+                        <li><i data-lucide="map-pin"></i> 150 Financial District, NY 10005</li>
+                        <li><i data-lucide="mail"></i> stratmontinvestmentinquires@hotmail.com</li>
+                        <li><i data-lucide="phone"></i> +1 (800) 555 0198</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="footer-bottom">
+                <div class="copyright">
+                    © 2026 Stratmont Investments. All rights reserved.
+                </div>
+                <div class="legal-links">
+                    <a href="docs.html">Documentation</a>
+                    <a href="privacy.html">Privacy Policy</a>
+                    <a href="terms.html">Terms of Service</a>
+                    <a href="risk-disclosure.html">Risk Disclosure</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Premium Floating Support Chat Button -->
+    <button id="homepageChatBtn" class="floating-support-btn" aria-label="Open Institutional Client Support">
+        <span class="support-btn-pulse"></span>
+        <div class="support-btn-icon">
+            <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"></path>
+            </svg>
+        </div>
+    </button>
+
+    <script src="main.js"></script>
+    <script>
+        lucide.createIcons();
+            document.getElementById('homepageChatBtn').addEventListener('click', () => {
+            const token = localStorage.getItem('stratmontToken');
+            const user = localStorage.getItem('stratmontUser');
+            
+            if (token && user) {
+                // Logged-in user — go straight to the support chat on the dashboard
+                window.location.href = 'dashboard.html?view=support';
+            } else if (localStorage.getItem('stratmontHasAccount')) {
+                // Returning visitor who has registered before but isn't logged in
+                window.location.href = 'auth.html';
+            } else {
+                // First-time visitor — send to register
+                window.location.href = 'auth.html';
+            }
+        });
+
+
+
+
+        // Intersection Observer for Entrance Animations (fadeInUp)
+        const revealElements = document.querySelectorAll('.section, .reveal');
+        const revealOptions = {
+            threshold: 0.1,
+            rootMargin: "0px 0px -50px 0px"
+        };
+        const revealOnScroll = new IntersectionObserver(function(entries, observer) {
+            entries.forEach(entry => {
+                if (!entry.isIntersecting) {
+                    return;
+                } else {
+                    entry.target.style.animation = `fadeInUp 0.6s ease forwards`;
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, revealOptions);
+        
+        revealElements.forEach(el => {
+            el.style.opacity = '0'; // Initial state before animation
+            revealOnScroll.observe(el);
+        });
+    </script>
+</body>
+</html>
