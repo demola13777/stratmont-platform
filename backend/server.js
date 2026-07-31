@@ -37,25 +37,8 @@ const authLimiter = rateLimit({
 app.use('/api', apiLimiter);
 app.use('/api/auth', authLimiter);
 
-// Database Connection
-const connectDB = async () => {
-    try {
-        await mongoose.connect(process.env.MONGO_URI);
-        console.log('✅ MongoDB Connected Successfully');
-    } catch (err) {
-        console.error('❌ MongoDB Connection Error:', err.message);
-        console.warn('⚠️ Have you replaced MONGO_URI in your .env file with your real connection string?');
-        // Do not exit immediately; allow retries or graceful handling in production
-    }
-};
-connectDB();
-
-mongoose.connection.on('disconnected', () => {
-    console.warn('⚠️ MongoDB disconnected! Attempting to reconnect...');
-});
-mongoose.connection.on('reconnected', () => {
-    console.log('✅ MongoDB reconnected successfully.');
-});
+const connectDB = require('./config/db');
+connectDB(); // Initialize connection
 
 const path = require('path');
 
