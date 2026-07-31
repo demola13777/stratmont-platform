@@ -14,22 +14,22 @@ const seedPlans = async () => {
                 name: 'Starter',
                 minDeposit: 1000,
                 maxDeposit: 9999,
-                dailyReturnRate: 8,
-                durationDays: 30
+                dailyReturnRate: 1.67,
+                durationDays: 90
             },
             {
                 name: 'Professional',
                 minDeposit: 10000,
                 maxDeposit: 49999,
-                dailyReturnRate: 12.5,
-                durationDays: 30
+                dailyReturnRate: 2.22,
+                durationDays: 90
             },
             {
                 name: 'Institutional',
                 minDeposit: 50000,
                 maxDeposit: 150000,
-                dailyReturnRate: 15,
-                durationDays: 30
+                dailyReturnRate: 3.33,
+                durationDays: 90
             }
         ];
 
