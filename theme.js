@@ -6,14 +6,27 @@
 
 (function() {
     // Apply theme immediately to prevent flash of wrong theme
-    const savedTheme = localStorage.getItem('stratmont_theme') || localStorage.getItem('theme') || 'dark';
-    document.documentElement.setAttribute('data-theme', savedTheme);
+    const savedTheme = localStorage.getItem('stratmont_theme') || localStorage.getItem('theme');
+    
+    // Default to system preference if no saved theme
+    if (!savedTheme) {
+        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        document.documentElement.setAttribute('data-theme', prefersDark ? 'dark' : 'light');
+    } else {
+        document.documentElement.setAttribute('data-theme', savedTheme);
+        // Also update meta color-scheme tag
+        const meta = document.querySelector('meta[name="color-scheme"]');
+        if (meta) meta.content = savedTheme;
+    }
 })();
 
 function applyTheme(theme) {
     document.documentElement.setAttribute('data-theme', theme);
     localStorage.setItem('stratmont_theme', theme);
     localStorage.setItem('theme', theme);
+    
+    const meta = document.querySelector('meta[name="color-scheme"]');
+    if (meta) meta.content = theme;
 }
 
 function toggleTheme() {
@@ -24,10 +37,6 @@ function toggleTheme() {
 
 // Attach event listeners on DOMContentLoaded
 document.addEventListener('DOMContentLoaded', () => {
-    // Re-apply in case DOM wasn't ready during initial IIFE
-    const savedTheme = localStorage.getItem('stratmont_theme') || localStorage.getItem('theme') || 'dark';
-    applyTheme(savedTheme);
-
     // Attach click handlers to all theme toggle buttons
     const toggles = document.querySelectorAll('.theme-toggle');
     toggles.forEach(btn => {
@@ -36,6 +45,13 @@ document.addEventListener('DOMContentLoaded', () => {
             e.stopPropagation();
             toggleTheme();
         });
+    });
+
+    // Listen to system changes if no explicit user preference
+    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
+        if (!localStorage.getItem('stratmont_theme')) {
+            applyTheme(e.matches ? 'dark' : 'light');
+        }
     });
 });
 
