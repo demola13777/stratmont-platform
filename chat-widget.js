@@ -290,7 +290,7 @@ class SupportChatWidget {
 
   togglePanel(forceState) {
     if (!this.token) {
-      window.location.href = 'login.html';
+      window.location.href = 'auth.html';
       return;
     }
     
