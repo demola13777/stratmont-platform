@@ -21,7 +21,7 @@ const startCronJobs = () => {
                 // Check if user cycle has completed 90 days
                 if (user.planStartDate) {
                     const daysPassed = (new Date() - new Date(user.planStartDate)) / (1000 * 60 * 60 * 24);
-                    if (daysPassed >= 90) {
+                    if (daysPassed >= user.activePlan.durationDays) {
                         // Mark cycle completed and skip yield
                         await User.findByIdAndUpdate(user._id, { cycleStatus: 'completed' });
                         continue;

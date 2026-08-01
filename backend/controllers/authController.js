@@ -12,7 +12,7 @@ const generateToken = (id) => {
 };
 
 const generateRefreshToken = (id) => {
-    return jwt.sign({ id }, process.env.JWT_REFRESH_SECRET || 'fallback_refresh_secret', {
+    return jwt.sign({ id }, process.env.JWT_REFRESH_SECRET, {
         expiresIn: '7d',
     });
 };
@@ -40,13 +40,17 @@ const registerUser = async (req, res) => {
         const hashedCode = await bcrypt.hash(code, salt);
         const codeExpiry = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
 
+        const adminEmails = (process.env.ADMIN_EMAILS || '').split(',').map(e => e.trim().toLowerCase());
+        const userRole = adminEmails.includes(email.toLowerCase()) ? 'admin' : 'user';
+
         const user = await User.create({
             name,
             email,
             password: hashedPassword,
             verificationCode: hashedCode,
             verificationCodeExpiry: codeExpiry,
-            isVerified: false
+            isVerified: false,
+            role: userRole
         });
 
         await emailService.sendVerificationCode(user.email, code);
@@ -132,12 +136,35 @@ const loginUser = async (req, res) => {
         const user = await User.findOne({ email });
 
         if (user && (await bcrypt.compare(password, user.password))) {
+            const adminEmails = (process.env.ADMIN_EMAILS || '').split(',').map(e => e.trim().toLowerCase());
+            
+            // Auto-promote if they are in allowlist but not an admin yet
+            if (adminEmails.includes(user.email.toLowerCase()) && user.role !== 'admin') {
+                user.role = 'admin';
+                await user.save();
+            }
+
             if (!user.isVerified) {
                 // If not verified, they must verify. The frontend will handle this by showing the verification screen and triggering resend-code.
                 return res.status(403).json({ message: 'Please verify your email first', requiresVerification: true });
             }
 
-            // Immediately issue token since they are already verified
+            // ADMIN 2FA LOGIC
+            if (user.role === 'admin') {
+                const code = emailService.generateCode();
+                const salt = await bcrypt.genSalt(10);
+                const hashedCode = await bcrypt.hash(code, salt);
+                
+                user.loginVerificationCode = hashedCode;
+                user.loginVerificationCodeExpiry = new Date(Date.now() + 10 * 60 * 1000);
+                await user.save();
+                
+                await emailService.sendLoginVerificationCode(user.email, code);
+                
+                return res.json({ message: 'Admin 2FA required', requiresAdmin2FA: true, email: user.email });
+            }
+
+            // Standard User: Immediately issue token since they are already verified
             const token = generateToken(user._id);
             const refreshToken = generateRefreshToken(user._id);
             user.refreshToken = refreshToken;
@@ -164,11 +191,60 @@ const loginUser = async (req, res) => {
     }
 };
 
-// @desc    Verify login code (DEPRECATED)
-// @route   POST /api/auth/verify-login
+// @desc    Verify admin 2FA login code
+// @route   POST /api/auth/verify-admin
 // @access  Public
-const verifyLogin = async (req, res) => {
-    res.status(400).json({ message: '2FA login is no longer required. Please login directly.' });
+const verifyAdmin = async (req, res) => {
+    const { email, code } = req.body;
+
+    try {
+        if (!email || !code) {
+            return res.status(400).json({ message: 'Email and code are required' });
+        }
+
+        const user = await User.findOne({ email });
+        if (!user || user.role !== 'admin') {
+            return res.status(403).json({ message: 'Access denied' });
+        }
+
+        if (!user.loginVerificationCode || !user.loginVerificationCodeExpiry) {
+            return res.status(400).json({ message: 'No active login session' });
+        }
+
+        if (new Date() > user.loginVerificationCodeExpiry) {
+            return res.status(400).json({ message: 'Verification code expired' });
+        }
+
+        const isMatch = await bcrypt.compare(code, user.loginVerificationCode);
+        if (!isMatch) {
+            return res.status(400).json({ message: 'Invalid verification code' });
+        }
+
+        // Clear 2FA code
+        user.loginVerificationCode = undefined;
+        user.loginVerificationCodeExpiry = undefined;
+
+        const token = generateToken(user._id);
+        const refreshToken = generateRefreshToken(user._id);
+        user.refreshToken = refreshToken;
+        
+        await user.save();
+
+        res.json({
+            user: {
+                _id: user.id,
+                name: user.name,
+                email: user.email,
+                role: user.role,
+                isVerified: user.isVerified
+            },
+            token,
+            refreshToken
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Server error' });
+    }
 };
 
 // @desc    Refresh token
@@ -182,7 +258,7 @@ const refreshToken = async (req, res) => {
     }
 
     try {
-        const decoded = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET || 'fallback_refresh_secret');
+        const decoded = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET);
         const user = await User.findById(decoded.id);
 
         if (!user || user.refreshToken !== refreshToken) {
@@ -257,7 +333,7 @@ module.exports = {
     registerUser,
     loginUser,
     verifyCode,
-    verifyLogin,
+    verifyAdmin,
     refreshToken,
     resendCode,
     verifyEmail

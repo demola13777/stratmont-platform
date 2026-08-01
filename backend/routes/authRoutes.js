@@ -4,7 +4,7 @@ const {
     registerUser, 
     loginUser, 
     verifyCode, 
-    verifyLogin, 
+    verifyAdmin,
     refreshToken,
     resendCode,
     verifyEmail 
@@ -13,7 +13,7 @@ const {
 router.post('/register', registerUser);
 router.post('/login', loginUser);
 router.post('/verify-code', verifyCode);
-// router.post('/verify-login', verifyLogin); // DEPRECATED
+router.post('/verify-admin', verifyAdmin);
 router.post('/refresh-token', refreshToken);
 router.post('/resend-code', resendCode);
 

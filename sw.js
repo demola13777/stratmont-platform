@@ -2,7 +2,7 @@ const CACHE_NAME = 'stratmont-cache-v2';
 const STATIC_ASSETS = [
     '/',
     '/index.html',
-    '/styles.css',
+    '/style.css',
     '/theme.js',
     '/dashboard.html',
     '/dashboard.js',

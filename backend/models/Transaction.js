@@ -9,12 +9,12 @@ const TransactionSchema = new mongoose.Schema({
     },
     type: {
         type: String,
-        enum: ['deposit', 'withdrawal', 'daily_yield'],
+        enum: ['deposit', 'withdrawal', 'daily_yield', 'reinvestment'],
         required: true
     },
     coin: {
         type: String,
-        enum: ['BTC', 'ETH', 'USDT'],
+        enum: ['BTC', 'ETH', 'USDT', 'USD'],
         default: 'USDT'
     },
     plan: {
@@ -33,6 +33,10 @@ const TransactionSchema = new mongoose.Schema({
     },
     walletAddressUsed: {
         type: String,
+        default: null
+    },
+    walletAddress: {
+        type: String, // Destination address for withdrawals
         default: null
     },
     transactionHash: {

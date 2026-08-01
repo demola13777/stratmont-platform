@@ -166,10 +166,11 @@ const loadUsers = async () => {
                     <tr>
                         <th>Name</th>
                         <th>Email</th>
-                        <th>Role</th>
+                        <th>Status</th>
                         <th>Balance</th>
                         <th>Total Deposited</th>
                         <th>Joined</th>
+                        <th>Actions</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -177,10 +178,14 @@ const loadUsers = async () => {
                         <tr>
                             <td style="font-weight:500;">${u.name}</td>
                             <td style="color:var(--muted);font-size:0.85rem;">${u.email}</td>
-                            <td><span class="badge ${u.role === 'admin' ? 'approved' : 'pending'}">${u.role}</span></td>
+                            <td><span class="badge ${u.role === 'admin' ? 'approved' : (u.status === 'suspended' || u.status === 'banned' ? 'rejected' : 'pending')}">${u.role === 'admin' ? 'admin' : u.status}</span></td>
                             <td>${fmt(u.balances?.availableBalance)}</td>
                             <td>${fmt(u.balances?.totalDeposit)}</td>
                             <td style="color:var(--muted);font-size:0.8rem;">${fmtDate(u.createdAt)}</td>
+                            <td>
+                                <button class="btn-outline" style="padding: 0.2rem 0.5rem; font-size: 0.75rem;" onclick="openBalanceModal('${u._id}', '${u.name}', ${u.balances?.availableBalance || 0}, ${u.balances?.totalDeposit || 0}, ${u.balances?.totalEarnings || 0})">Balance</button>
+                                <button class="btn-outline" style="padding: 0.2rem 0.5rem; font-size: 0.75rem; margin-left: 0.5rem;" onclick="openStatusModal('${u._id}', '${u.name}', '${u.status || 'active'}')">Status</button>
+                            </td>
                         </tr>
                     `).join('')}
                 </tbody>
@@ -188,6 +193,82 @@ const loadUsers = async () => {
         `;
     } catch (err) { el.innerHTML = '<p class="empty-state">Error loading users.</p>'; }
 };
+
+// ─── USER ACTIONS (MODALS) ───
+window.openModal = (id) => document.getElementById(id).classList.add('active');
+window.closeModal = (id) => document.getElementById(id).classList.remove('active');
+
+window.openBalanceModal = (id, name, avail, dep, earn) => {
+    document.getElementById('balanceUserId').value = id;
+    document.getElementById('balanceModalUser').textContent = `Editing balances for ${name}`;
+    document.getElementById('modAvail').value = avail;
+    document.getElementById('modDeposit').value = dep;
+    document.getElementById('modEarnings').value = earn;
+    document.getElementById('balanceAlert').style.display = 'none';
+    openModal('balanceModal');
+};
+
+document.getElementById('balanceForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const id = document.getElementById('balanceUserId').value;
+    const avail = document.getElementById('modAvail').value;
+    const dep = document.getElementById('modDeposit').value;
+    const earn = document.getElementById('modEarnings').value;
+    const alertEl = document.getElementById('balanceAlert');
+
+    try {
+        const res = await fetch(`${API}/admin/users/${id}/balance`, {
+            method: 'PUT',
+            headers: headers(),
+            body: JSON.stringify({ availableBalance: avail, totalDeposit: dep, totalEarnings: earn })
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.message);
+        
+        alertEl.textContent = '✓ Balances updated successfully.';
+        alertEl.className = 'dash-alert success';
+        alertEl.style.display = 'block';
+        setTimeout(() => { closeModal('balanceModal'); loadUsers(); }, 1500);
+    } catch (err) {
+        alertEl.textContent = '✗ ' + err.message;
+        alertEl.className = 'dash-alert error';
+        alertEl.style.display = 'block';
+    }
+});
+
+window.openStatusModal = (id, name, currentStatus) => {
+    document.getElementById('statusUserId').value = id;
+    document.getElementById('statusModalUser').textContent = `Changing status for ${name}`;
+    document.getElementById('modStatus').value = currentStatus;
+    document.getElementById('statusAlert').style.display = 'none';
+    openModal('statusModal');
+};
+
+document.getElementById('statusForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const id = document.getElementById('statusUserId').value;
+    const status = document.getElementById('modStatus').value;
+    const alertEl = document.getElementById('statusAlert');
+
+    try {
+        const res = await fetch(`${API}/admin/users/${id}/status`, {
+            method: 'PUT',
+            headers: headers(),
+            body: JSON.stringify({ status })
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.message);
+        
+        alertEl.textContent = '✓ Status updated successfully.';
+        alertEl.className = 'dash-alert success';
+        alertEl.style.display = 'block';
+        setTimeout(() => { closeModal('statusModal'); loadUsers(); }, 1500);
+    } catch (err) {
+        alertEl.textContent = '✗ ' + err.message;
+        alertEl.className = 'dash-alert error';
+        alertEl.style.display = 'block';
+    }
+});
 
 // ─── LOAD WALLETS ───
 const loadWallets = async () => {
@@ -583,6 +664,14 @@ if (hamburger && sidebar && sidebarOverlay) {
         sidebar.classList.remove('open');
         sidebarOverlay.classList.remove('active');
     });
+    
+    const sidebarClose = document.getElementById('sidebarClose');
+    if (sidebarClose) {
+        sidebarClose.addEventListener('click', () => {
+            sidebar.classList.remove('open');
+            sidebarOverlay.classList.remove('active');
+        });
+    }
 
     // Also close sidebar when a nav item is clicked on mobile
     document.querySelectorAll('.nav-item').forEach(item => {

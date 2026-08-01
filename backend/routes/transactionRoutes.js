@@ -4,6 +4,7 @@ const { protect } = require('../middleware/authMiddleware');
 const Transaction = require('../models/Transaction');
 const User = require('../models/User');
 const Settings = require('../models/Settings');
+const Plan = require('../models/Plan');
 
 // @route   POST /api/transactions/deposit
 // @desc    Submit a deposit request
@@ -15,6 +16,12 @@ router.post('/deposit', protect, async (req, res) => {
         if (!amount || !planId || !walletAddressUsed) {
             return res.status(400).json({ message: 'Amount, plan, and wallet address are required.' });
         }
+        
+        const plan = await Plan.findById(planId);
+        if (!plan) return res.status(400).json({ message: 'Invalid plan selected.' });
+        if (parseFloat(amount) < plan.minDeposit) return res.status(400).json({ message: `Minimum deposit for this plan is $${plan.minDeposit}.` });
+        if (parseFloat(amount) > plan.maxDeposit) return res.status(400).json({ message: `Maximum deposit for this plan is $${plan.maxDeposit}.` });
+
 
         // Check for existing pending deposit to prevent duplicates
         const existingPending = await Transaction.findOne({ user: req.user._id, type: 'deposit', status: 'pending' });
@@ -65,6 +72,7 @@ router.post('/withdraw', protect, async (req, res) => {
     try {
         const { amount, walletAddress, coin } = req.body;
         if (!amount || !walletAddress) return res.status(400).json({ message: 'Amount and wallet address are required.' });
+        if (parseFloat(amount) < 1) return res.status(400).json({ message: 'Minimum withdrawal amount is $1.' });
 
         const user = await User.findById(req.user._id);
 
@@ -89,9 +97,10 @@ router.post('/withdraw', protect, async (req, res) => {
         const transaction = await Transaction.create({
             user: user._id,
             type: 'withdrawal',
-            amount,
+            amount: parseFloat(amount),
             coin: coin || 'USDT', // user's crypto
-            status: 'pending'
+            status: 'pending',
+            walletAddress: walletAddress
         });
 
         res.status(201).json({ message: 'Withdrawal request submitted successfully.', transaction });

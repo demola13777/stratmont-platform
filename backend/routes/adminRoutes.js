@@ -132,9 +132,9 @@ router.get('/settings/wallets', protect, adminOnly, async (req, res) => {
                 activeCryptoWallet: 'placeholder',
                 walletNetwork: 'USDT',
                 wallets: {
-                    BTC:  { address: '1A1zP1eP5QGefi2DMPTfTL5SLmv7Divfna', network: 'Bitcoin Network' },
-                    ETH:  { address: '0x742d35Cc6634C0532925a3b8D4C9b1C4d4E1a2f', network: 'ERC-20 Network' },
-                    USDT: { address: 'TKFLy5PEFJkZgbPH6V4eipkDrgGbUzSajF', network: 'TRC-20 Network' }
+                    BTC:  { address: 'Configure in Admin Panel', network: 'Bitcoin Network' },
+                    ETH:  { address: 'Configure in Admin Panel', network: 'ERC-20 Network' },
+                    USDT: { address: 'Configure in Admin Panel', network: 'TRC-20 Network' }
                 }
             });
         }
@@ -187,6 +187,97 @@ router.get('/stats', protect, adminOnly, async (req, res) => {
         });
     } catch (err) {
         res.status(500).json({ message: 'Server error' });
+    }
+});
+
+// ─── GET AUDIT LOGS ───
+router.get('/audit-logs', protect, adminOnly, async (req, res) => {
+    try {
+        const page = parseInt(req.query.page) || 1;
+        const limit = parseInt(req.query.limit) || 20;
+        const skip = (page - 1) * limit;
+
+        const AuditLog = require('../models/AuditLog');
+        const total = await AuditLog.countDocuments({});
+        const logs = await AuditLog.find({})
+            .populate('admin', 'name email')
+            .populate('targetUser', 'name email')
+            .sort({ createdAt: -1 })
+            .skip(skip)
+            .limit(limit);
+
+        res.json({
+            data: logs,
+            pagination: {
+                page,
+                limit,
+                total,
+                totalPages: Math.ceil(total / limit)
+            }
+        });
+    } catch (err) {
+        res.status(500).json({ message: 'Server error fetching audit logs.' });
+    }
+});
+
+// ─── MANUAL BALANCE ADJUSTMENT ───
+router.put('/users/:id/balance', protect, adminOnly, async (req, res) => {
+    try {
+        const { availableBalance, totalDeposit, totalEarnings } = req.body;
+        const user = await User.findById(req.params.id);
+        
+        if (!user) return res.status(404).json({ message: 'User not found' });
+
+        if (availableBalance !== undefined) user.balances.availableBalance = Number(availableBalance);
+        if (totalDeposit !== undefined) user.balances.totalDeposit = Number(totalDeposit);
+        if (totalEarnings !== undefined) user.balances.totalEarnings = Number(totalEarnings);
+
+        await user.save();
+
+        const AuditLog = require('../models/AuditLog');
+        await AuditLog.create({
+            admin: req.user._id,
+            action: 'MANUAL_BALANCE_ADJUST',
+            targetUser: user._id,
+            details: `Admin manually adjusted balances for ${user.email}`
+        });
+
+        res.json({ message: 'Balance adjusted successfully', user });
+    } catch (err) {
+        res.status(500).json({ message: 'Server error adjusting balance.' });
+    }
+});
+
+// ─── UPDATE ACCOUNT STATUS (SUSPEND/BAN) ───
+router.put('/users/:id/status', protect, adminOnly, async (req, res) => {
+    try {
+        const { status } = req.body;
+        if (!['active', 'suspended', 'banned'].includes(status)) {
+            return res.status(400).json({ message: 'Invalid status provided.' });
+        }
+
+        const user = await User.findById(req.params.id);
+        if (!user) return res.status(404).json({ message: 'User not found' });
+
+        // Don't let admins suspend themselves
+        if (user._id.toString() === req.user._id.toString()) {
+            return res.status(400).json({ message: 'Cannot modify your own status.' });
+        }
+
+        user.status = status;
+        await user.save();
+
+        const AuditLog = require('../models/AuditLog');
+        await AuditLog.create({
+            admin: req.user._id,
+            action: `ACCOUNT_STATUS_CHANGE`,
+            targetUser: user._id,
+            details: `Admin changed account status to ${status.toUpperCase()}`
+        });
+
+        res.json({ message: `Account status updated to ${status}`, user });
+    } catch (err) {
+        res.status(500).json({ message: 'Server error updating status.' });
     }
 });
 

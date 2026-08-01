@@ -455,14 +455,19 @@ class SupportChatWidget {
       
       let contentHtml = '';
       if (msg.content) {
-        contentHtml += `${msg.content.replace(/\\n/g, '<br>')}`;
+        const temp = document.createElement('div');
+        temp.textContent = msg.content;
+        contentHtml += temp.innerHTML.replace(/\n/g, '<br>');
       }
       
       if (msg.attachmentUrl) {
+        const safeUrl = msg.attachmentUrl.trim().toLowerCase().startsWith('javascript:') ? '#' : msg.attachmentUrl;
+        const tempName = document.createElement('div');
+        tempName.textContent = msg.attachmentName || 'Attachment';
         contentHtml += `
           <div class="chat-attachment">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"></path></svg>
-            <a href="${msg.attachmentUrl}" target="_blank">${msg.attachmentName || 'Attachment'}</a>
+            <a href="${safeUrl.replace(/"/g, '&quot;')}" target="_blank">${tempName.innerHTML}</a>
           </div>
         `;
       }

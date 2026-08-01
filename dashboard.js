@@ -26,7 +26,7 @@ const switchView = (viewId) => {
     document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
     document.getElementById(`view-${viewId}`).classList.add('active');
     document.querySelector(`[data-view="${viewId}"]`).classList.add('active');
-    const titles = { overview: 'Overview', invest: 'Invest Now', deposit: 'Make a Deposit', history: 'Transaction History' };
+    const titles = { overview: 'Overview', invest: 'Invest Now', deposit: 'Make a Deposit', history: 'Transaction History', withdraw: 'Withdraw Funds' };
     document.getElementById('topbarTitle').textContent = titles[viewId] || 'Dashboard';
     closeSidebar();
 
@@ -59,7 +59,8 @@ document.querySelectorAll('.nav-item').forEach(item => {
 
 // ─── LOGOUT ───
 document.getElementById('logoutBtn').addEventListener('click', () => {
-    localStorage.clear();
+    localStorage.removeItem(window.STRATMONT_CONFIG?.TOKEN_KEY || 'stratmontToken');
+    localStorage.removeItem(window.STRATMONT_CONFIG?.USER_KEY || 'stratmontUser');
     window.location.href = 'auth.html';
 });
 
@@ -82,12 +83,24 @@ const loadDashboard = async () => {
         });
         if (res.status === 401) { localStorage.clear(); window.location.href = 'auth.html'; return; }
         const data = await res.json();
-        document.getElementById('availBalance').textContent = fmt(data.balances?.availableBalance);
-        document.getElementById('totalDeposit').textContent = fmt(data.balances?.totalDeposit);
-        document.getElementById('totalEarnings').textContent = fmt(data.balances?.totalEarnings);
+        const availEl = document.getElementById('availBalance');
+        availEl.classList.remove('skeleton-text-placeholder');
+        availEl.textContent = fmt(data.balances?.availableBalance);
+        
+        const depositEl = document.getElementById('totalDeposit');
+        depositEl.classList.remove('skeleton-text-placeholder');
+        depositEl.textContent = fmt(data.balances?.totalDeposit);
+        
+        const earningsEl = document.getElementById('totalEarnings');
+        earningsEl.classList.remove('skeleton-text-placeholder');
+        earningsEl.textContent = fmt(data.balances?.totalEarnings);
 
         // Update withdrawal max text
-        document.getElementById('withdrawMaxText').textContent = fmt(data.balances?.availableBalance);
+        const maxTextEl = document.getElementById('withdrawMaxText');
+        if (maxTextEl) {
+            maxTextEl.classList.remove('skeleton-text-placeholder');
+            maxTextEl.textContent = fmt(data.balances?.availableBalance);
+        }
         document.getElementById('withdrawAmount').dataset.max = data.balances?.availableBalance || 0;
 
         currentCycleStatus = data.cycleStatus || 'active';
@@ -170,9 +183,17 @@ const startVisualCompounding = () => {
     let currentAvailable = parseFloat(document.getElementById('availBalance').textContent.replace(/[^0-9.-]+/g,"")) || 0;
 
     // Calculate elapsed time since last backend sync (Midnight UTC or planStartDate)
-    const now = new Date();
-    const lastMidnightUTC = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()));
     const planStart = new Date(userPlanStartDate);
+    const durationDays = activePlanData.durationDays || 90;
+    const cycleEndTime = planStart.getTime() + (durationDays * 24 * 60 * 60 * 1000);
+    const nowTime = Math.min(new Date().getTime(), cycleEndTime);
+    const now = new Date(nowTime);
+    
+    if (new Date().getTime() >= cycleEndTime && currentCycleStatus === 'active') {
+        currentCycleStatus = 'completed';
+    }
+
+    const lastMidnightUTC = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()));
     
     // The baseline is either the last midnight UTC, or the plan start date if the plan started today
     const baselineTime = Math.max(lastMidnightUTC.getTime(), planStart.getTime());
@@ -186,7 +207,6 @@ const startVisualCompounding = () => {
         
         document.getElementById('totalEarnings').textContent = fmt(currentEarnings);
         document.getElementById('availBalance').textContent = fmt(currentAvailable);
-        document.getElementById('withdrawMaxText').textContent = fmt(currentAvailable);
     }
 
     // Update the DOM 10 times a second
@@ -194,12 +214,15 @@ const startVisualCompounding = () => {
     const profitPerTick = profitPerMs * updateRateMs;
 
     compoundingInterval = setInterval(() => {
+        if (new Date().getTime() >= cycleEndTime) {
+            clearInterval(compoundingInterval);
+            return;
+        }
         currentEarnings += profitPerTick;
         currentAvailable += profitPerTick;
 
         document.getElementById('totalEarnings').textContent = fmt(currentEarnings);
         document.getElementById('availBalance').textContent = fmt(currentAvailable);
-        document.getElementById('withdrawMaxText').textContent = fmt(currentAvailable);
     }, updateRateMs);
 };
 
@@ -242,7 +265,7 @@ const loadPlans = async () => {
         selectEl.innerHTML = '<option value="">-- Choose a Plan --</option>';
 
         plans.forEach((plan, i) => {
-            const isFeatured = plan._id === 'professional';
+            const isFeatured = plan.name.toLowerCase() === 'professional';
             const card = document.createElement('div');
             card.className = `plan-card${isFeatured ? ' featured' : ''}`;
             card.innerHTML = `
@@ -485,37 +508,8 @@ const loadRecentTx = async () => {
     } catch (err) {}
 };
 
-// ─── THEME TOGGLE ───
-const setupThemeToggle = () => {
-    let btn = document.getElementById('themeToggleBtn');
-    if (!btn) {
-        btn = document.createElement('button');
-        btn.id = 'themeToggleBtn';
-        btn.className = 'theme-toggle-icon';
-        btn.style.background = 'transparent';
-        btn.style.border = 'none';
-        btn.style.fontSize = '1.2rem';
-        btn.style.cursor = 'pointer';
-        btn.style.marginLeft = 'auto';
-        btn.style.marginRight = '15px';
-        const topbar = document.querySelector('.topbar') || document.body;
-        if (topbar) {
-            const userProfile = document.querySelector('.user-profile');
-            if (userProfile && userProfile.parentNode === topbar) {
-                topbar.insertBefore(btn, userProfile);
-            } else {
-                topbar.appendChild(btn);
-            }
-        }
-    }
-    btn.addEventListener('click', () => {
-        if (window.toggleTheme) window.toggleTheme();
-    });
-};
-
 // ─── INIT ───
 initUserInfo();
-setupThemeToggle();
 (async () => {
     await loadPlans();
     await loadDashboard();

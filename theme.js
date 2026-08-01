@@ -6,7 +6,7 @@
 
 (function() {
     // Apply theme immediately to prevent flash of wrong theme
-    const savedTheme = localStorage.getItem('stratmont_theme') || localStorage.getItem('theme');
+    const savedTheme = localStorage.getItem(window.STRATMONT_CONFIG?.THEME_KEY || 'stratmontTheme') || localStorage.getItem('stratmont_theme') || localStorage.getItem('theme');
     
     // Default to system preference if no saved theme
     if (!savedTheme) {
@@ -22,8 +22,9 @@
 
 function applyTheme(theme) {
     document.documentElement.setAttribute('data-theme', theme);
-    localStorage.setItem('stratmont_theme', theme);
-    localStorage.setItem('theme', theme);
+    localStorage.setItem(window.STRATMONT_CONFIG?.THEME_KEY || 'stratmontTheme', theme);
+    localStorage.removeItem('stratmont_theme');
+    localStorage.removeItem('theme');
     
     const meta = document.querySelector('meta[name="color-scheme"]');
     if (meta) meta.content = theme;
@@ -49,7 +50,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Listen to system changes if no explicit user preference
     window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
-        if (!localStorage.getItem('stratmont_theme')) {
+        if (!localStorage.getItem(window.STRATMONT_CONFIG?.THEME_KEY || 'stratmontTheme')) {
             applyTheme(e.matches ? 'dark' : 'light');
         }
     });

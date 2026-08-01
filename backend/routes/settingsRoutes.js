@@ -4,9 +4,9 @@ const Settings = require('../models/Settings');
 
 // Default wallets used if no settings found in DB yet
 const defaultWallets = {
-    BTC:  { address: '1A1zP1eP5QGefi2DMPTfTL5SLmv7Divfna', network: 'Bitcoin Network' },
-    ETH:  { address: '0x742d35Cc6634C0532925a3b8D4C9b1C4d4E1a2f', network: 'ERC-20 Network' },
-    USDT: { address: 'TKFLy5PEFJkZgbPH6V4eipkDrgGbUzSajF', network: 'TRC-20 Network' }
+    BTC:  { address: 'Configure in Admin Panel', network: 'Bitcoin Network' },
+    ETH:  { address: 'Configure in Admin Panel', network: 'ERC-20 Network' },
+    USDT: { address: 'Configure in Admin Panel', network: 'TRC-20 Network' }
 };
 
 // @route   GET /api/settings/wallets

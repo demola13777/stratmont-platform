@@ -161,13 +161,46 @@ document.addEventListener('DOMContentLoaded', () => {
 
             const data = await parseJsonResponse(res);
 
+            if (data.requiresVerification) {
+                authEmail = email;
+                verifyEmailDisplay.textContent = authEmail;
+                
+                // Set mode to register so verify step hits /auth/verify-code
+                currentMode = 'register';
+                
+                // Auto resend code
+                fetch(`${API_BASE}/auth/resend-code`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email: authEmail, type: 'register' })
+                }).catch(e => console.error(e));
+
+                showStep(stepVerification);
+                startResendTimer();
+                digitInputs[0].focus();
+                
+                showAlert('A new verification code has been sent to your email.', false);
+                return;
+            }
+
             if (!res.ok) throw new Error(data.message || `${currentMode === 'login' ? 'Login' : 'Registration'} failed`);
 
             // Success, proceed
+            if (currentMode === 'login' && data.requiresAdmin2FA) {
+                // Admin 2FA triggered
+                authEmail = data.email || email;
+                verifyEmailDisplay.textContent = authEmail;
+                showStep(stepVerification);
+                startResendTimer();
+                digitInputs[0].focus();
+                return;
+            }
+
             if (currentMode === 'login') {
                 // If login is successful, they are verified. Store tokens and redirect.
-                localStorage.setItem('stratmont_token', data.token);
-                localStorage.setItem('stratmont_refresh', data.refreshToken);
+                localStorage.setItem(window.STRATMONT_CONFIG?.TOKEN_KEY || 'stratmontToken', data.token);
+                if (data.refreshToken) localStorage.setItem(window.STRATMONT_CONFIG?.REFRESH_TOKEN_KEY || 'stratmontRefreshToken', data.refreshToken);
+                localStorage.setItem(window.STRATMONT_CONFIG?.USER_KEY || 'stratmontUser', JSON.stringify(data.user || data));
                 window.location.href = 'dashboard.html';
                 return;
             } else {
@@ -253,7 +286,15 @@ document.addEventListener('DOMContentLoaded', () => {
         verifySubmit.textContent = 'Verifying...';
 
         try {
-            const endpoint = currentMode === 'login' ? '/auth/verify-login' : '/auth/verify-code';
+            let endpoint = '';
+            if (currentMode === 'register') {
+                endpoint = '/auth/verify-code';
+            } else if (authTitle.textContent === 'Welcome Back' && authEmail) {
+                // Implicitly implies this is the admin 2FA verification from a login
+                endpoint = '/auth/verify-admin';
+            } else {
+                endpoint = '/auth/verify-code'; // Fallback
+            }
             
             const res = await fetch(`${API_BASE}${endpoint}`, {
                 method: 'POST',
@@ -274,7 +315,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
             // Redirect after 1.5s
             setTimeout(() => {
-                window.location.href = 'dashboard.html';
+                const u = data.user || data;
+                if (u.role === 'admin') {
+                    window.location.href = 'admin.html';
+                } else {
+                    window.location.href = 'dashboard.html';
+                }
             }, 1500);
 
         } catch (error) {
