@@ -224,7 +224,7 @@
     margin-bottom: 1.25rem;
     backdrop-filter: blur(8px);
 }
-.section-title {
+.dashboard-layout .section-title {
     font-size: 0.75rem;
     font-family: var(--font-display, 'Inter', sans-serif);
     font-weight: 600;
@@ -236,7 +236,7 @@
     letter-spacing: 1.5px;
     text-transform: uppercase;
 }
-.section-title::after {
+.dashboard-layout .section-title::after {
     content: '';
     position: absolute;
     bottom: -1px;
@@ -572,60 +572,103 @@
 }
 
 /* ─── LIGHT THEME OVERRIDES ─── */
-[data-theme='light'] {
+[data-theme='light'] .dashboard-layout {
     --text-light: #000000;
     --text-muted: #333333;
     --text-subtle: #555555;
     --bg-card: rgba(255, 255, 255, 0.95);
 }
-[data-theme='light'] .sidebar {
+[data-theme='light'] .dashboard-layout .sidebar {
     background: rgba(255, 255, 255, 0.98);
     border-right-color: rgba(0, 0, 0, 0.08);
 }
-[data-theme='light'] .topbar {
+[data-theme='light'] .dashboard-layout .topbar {
     background: rgba(255, 255, 255, 0.92);
     border-bottom-color: rgba(0, 0, 0, 0.08);
 }
-[data-theme='light'] .stat-card:hover {
+[data-theme='light'] .dashboard-layout .topbar-title {
+    color: #000000;
+}
+[data-theme='light'] .dashboard-layout .stat-card:hover {
     border-color: rgba(0, 0, 0, 0.12);
 }
-[data-theme='light'] .section-card {
+[data-theme='light'] .dashboard-layout .stat-body h4 {
+    color: #333333;
+}
+[data-theme='light'] .dashboard-layout .stat-body h2 {
+    color: #000000;
+}
+[data-theme='light'] .dashboard-layout .section-title {
+    color: #000000;
+}
+[data-theme='light'] .dashboard-layout .section-card {
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
 }
-[data-theme='light'] .form-group input,
-[data-theme='light'] .form-group select {
+[data-theme='light'] .dashboard-layout .view-subtitle {
+    color: #333333;
+}
+[data-theme='light'] .dashboard-layout .nav-item {
+    color: #333333;
+}
+[data-theme='light'] .dashboard-layout .nav-item.active {
+    color: #000000;
+}
+[data-theme='light'] .dashboard-layout .form-group label {
+    color: #333333;
+}
+[data-theme='light'] .dashboard-layout .form-group input,
+[data-theme='light'] .dashboard-layout .form-group select {
     background: rgba(255, 255, 255, 0.9);
     border-color: rgba(0, 0, 0, 0.12);
-    color: var(--color-text-primary);
+    color: #000000;
 }
-[data-theme='light'] .form-group select option {
+[data-theme='light'] .dashboard-layout .form-group select option {
     background: #fff;
     color: #1e293b;
 }
-[data-theme='light'] .tx-table td {
+[data-theme='light'] .dashboard-layout .tx-table th {
+    color: #555555;
+}
+[data-theme='light'] .dashboard-layout .tx-table td {
+    color: #000000;
     border-bottom-color: rgba(0, 0, 0, 0.06);
 }
-[data-theme='light'] .tx-table tr:hover td {
+[data-theme='light'] .dashboard-layout .tx-table tr:hover td {
     background: rgba(0, 0, 0, 0.02);
 }
-[data-theme='light'] .plan-card {
+[data-theme='light'] .dashboard-layout .plan-card {
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
 }
-[data-theme='light'] .plan-card:hover {
+[data-theme='light'] .dashboard-layout .plan-card h3 {
+    color: #000000;
+}
+[data-theme='light'] .dashboard-layout .plan-card p,
+[data-theme='light'] .dashboard-layout .plan-card span {
+    color: #333333;
+}
+[data-theme='light'] .dashboard-layout .plan-card:hover {
     border-color: var(--color-gold);
     box-shadow: 0 4px 16px rgba(184, 147, 36, 0.12);
 }
-[data-theme='light'] .copy-btn {
+[data-theme='light'] .dashboard-layout .copy-btn {
     background: rgba(0, 0, 0, 0.06);
-    color: var(--color-text-primary);
+    color: #000000;
 }
-[data-theme='light'] .sidebar-nav a:hover,
-[data-theme='light'] .sidebar-nav a.active {
-    background: rgba(184, 147, 36, 0.08);
+[data-theme='light'] .dashboard-layout .sidebar-logo {
+    color: #000000;
 }
-[data-theme='light'] .dash-alert.error {
+[data-theme='light'] .dashboard-layout .logout-btn {
+    color: #333333;
+}
+[data-theme='light'] .dashboard-layout .empty-state {
+    color: #555555;
+}
+[data-theme='light'] .dashboard-layout .plan-display-empty p {
+    color: #555555;
+}
+[data-theme='light'] .dashboard-layout .dash-alert.error {
     background: rgba(239, 68, 68, 0.06);
 }
-[data-theme='light'] .dash-alert.success {
+[data-theme='light'] .dashboard-layout .dash-alert.success {
     background: rgba(16, 185, 129, 0.06);
 }
