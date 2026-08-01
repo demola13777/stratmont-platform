@@ -312,7 +312,14 @@ const loadDepositView = async () => {
 
 const updateWalletDisplay = (coin) => {
     const data = wallets[coin];
-    if (!data) return;
+    const networkMap = { SOL: 'SPL', DOGE: 'Dogecoin Network', BTC: 'Bitcoin', ETH: 'ERC-20' };
+    
+    if (!data || !data.address) {
+        document.getElementById('walletAddressDisplay').textContent = 'Address not configured';
+        document.getElementById('selectedCoinLabel').textContent = `${coin} (${data?.network || networkMap[coin] || 'Network'})`;
+        document.getElementById('qrCodeImg').src = '';
+        return;
+    }
     const addr = data.address;
     document.getElementById('walletAddressDisplay').textContent = addr;
     document.getElementById('selectedCoinLabel').textContent = `${coin} (${data.network})`;
