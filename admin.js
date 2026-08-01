@@ -525,7 +525,9 @@ const loadSupportTickets = async () => {
             supportTickets = await res.json();
             renderSupportStats();
             renderSupportList();
-            startSupportPolling();
+            if (document.getElementById('view-support').classList.contains('active')) {
+                startSupportPolling();
+            }
         }
     } catch (err) { console.error('Failed to load support tickets', err); }
 };
@@ -725,6 +727,11 @@ const startSupportPolling = () => {
     if (supportPollInterval) clearInterval(supportPollInterval);
     supportPollInterval = setInterval(() => {
         // Only poll if support view is active
+        if (!document.getElementById('view-support').classList.contains('active')) {
+            clearInterval(supportPollInterval);
+            return;
+        }
+        
         if (document.getElementById('view-support').classList.contains('active')) {
             // Re-fetch all tickets in background to update list and stats
             fetch(`${API}/support/admin/tickets`, { headers: headers() })

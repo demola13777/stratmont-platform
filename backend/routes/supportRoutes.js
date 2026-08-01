@@ -77,7 +77,7 @@ router.post('/tickets', protect, upload.single('attachment'), async (req, res) =
     };
 
     if (req.file) {
-      newMessage.attachmentUrl = `/uploads/${req.file.filename}`;
+      newMessage.attachmentUrl = req.file.path || `/uploads/${req.file.filename}`;
       newMessage.attachmentName = req.file.originalname;
     }
 
@@ -196,7 +196,7 @@ router.post('/tickets/:id/messages', protect, upload.single('attachment'), async
     };
 
     if (req.file) {
-      newMessage.attachmentUrl = `/uploads/${req.file.filename}`;
+      newMessage.attachmentUrl = req.file.path || `/uploads/${req.file.filename}`;
       newMessage.attachmentName = req.file.originalname;
     }
     
@@ -341,7 +341,7 @@ router.post('/admin/tickets/:id/messages', protect, adminCheck, upload.single('a
     };
 
     if (req.file) {
-      newMessage.attachmentUrl = `/uploads/${req.file.filename}`;
+      newMessage.attachmentUrl = req.file.path || `/uploads/${req.file.filename}`;
       newMessage.attachmentName = req.file.originalname;
     }
     

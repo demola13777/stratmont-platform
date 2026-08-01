@@ -74,7 +74,27 @@ app.use((err, req, res, next) => {
 });
 
 // Initialize Cron Jobs
-require('./cron')();
+const { startCronJobs, processDailyYield } = require('./cron');
+startCronJobs();
+
+// Vercel Cron API Endpoint
+app.post('/api/cron/daily-yield', async (req, res) => {
+    try {
+        // Secure the endpoint by requiring an authorization header
+        // For Vercel Crons, Vercel sends `Bearer $CRON_SECRET`
+        const authHeader = req.headers.authorization;
+        const expectedSecret = `Bearer ${process.env.CRON_SECRET}`;
+        
+        if (process.env.CRON_SECRET && authHeader !== expectedSecret) {
+            return res.status(401).json({ message: 'Unauthorized' });
+        }
+        
+        const result = await processDailyYield();
+        res.status(200).json(result);
+    } catch (error) {
+        res.status(500).json({ message: 'Cron execution failed', error: error.message });
+    }
+});
 
 // Start Server
 if (require.main === module) {
