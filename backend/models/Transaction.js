@@ -14,8 +14,8 @@ const TransactionSchema = new mongoose.Schema({
     },
     coin: {
         type: String,
-        enum: ['BTC', 'ETH', 'USDT', 'USD'],
-        default: 'USDT'
+        enum: ['BTC', 'ETH', 'USDT', 'SOL', 'DOGE', 'USD'],
+        default: 'SOL'
     },
     plan: {
         type: String,

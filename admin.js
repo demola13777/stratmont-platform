@@ -381,7 +381,8 @@ const loadWallets = async () => {
         const wallets = await res.json();
         if (wallets.BTC) document.getElementById('walletBTC').value = wallets.BTC.address || '';
         if (wallets.ETH) document.getElementById('walletETH').value = wallets.ETH.address || '';
-        if (wallets.USDT) document.getElementById('walletUSDT').value = wallets.USDT.address || '';
+        if (wallets.SOL) document.getElementById('walletSOL').value = wallets.SOL.address || '';
+        if (wallets.DOGE) document.getElementById('walletDOGE').value = wallets.DOGE.address || '';
     } catch (err) { console.error('Error loading wallets:', err); }
 };
 
@@ -392,7 +393,8 @@ document.getElementById('saveWalletsBtn').addEventListener('click', async () => 
 
     const BTC = document.getElementById('walletBTC').value.trim();
     const ETH = document.getElementById('walletETH').value.trim();
-    const USDT = document.getElementById('walletUSDT').value.trim();
+    const SOL = document.getElementById('walletSOL').value.trim();
+    const DOGE = document.getElementById('walletDOGE').value.trim();
 
     const btn = document.getElementById('saveWalletsBtn');
     btn.textContent = 'Saving...';
@@ -405,7 +407,8 @@ document.getElementById('saveWalletsBtn').addEventListener('click', async () => 
             body: JSON.stringify({
                 BTC: { address: BTC },
                 ETH: { address: ETH },
-                USDT: { address: USDT }
+                SOL: { address: SOL },
+                DOGE: { address: DOGE }
             })
         });
         const data = await res.json();

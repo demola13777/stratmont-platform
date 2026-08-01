@@ -155,11 +155,12 @@ router.get('/settings/wallets', protect, adminOnly, async (req, res) => {
             // Seed defaults
             settings = await Settings.create({
                 activeCryptoWallet: 'placeholder',
-                walletNetwork: 'USDT',
+                walletNetwork: 'SOL',
                 wallets: {
                     BTC:  { address: 'Configure in Admin Panel', network: 'Bitcoin Network' },
                     ETH:  { address: 'Configure in Admin Panel', network: 'ERC-20 Network' },
-                    USDT: { address: 'Configure in Admin Panel', network: 'TRC-20 Network' }
+                    SOL: { address: 'Configure in Admin Panel', network: 'SPL Network' },
+                    DOGE: { address: 'Configure in Admin Panel', network: 'Dogecoin Network' }
                 }
             });
         }
@@ -172,17 +173,18 @@ router.get('/settings/wallets', protect, adminOnly, async (req, res) => {
 // ─── UPDATE WALLET SETTINGS ───
 router.put('/settings/wallets', protect, adminOnly, async (req, res) => {
     try {
-        const { BTC, ETH, USDT } = req.body;
+        const { BTC, ETH, SOL, DOGE } = req.body;
 
         let settings = await Settings.findOne({});
         if (!settings) {
-            settings = new Settings({ activeCryptoWallet: 'placeholder', walletNetwork: 'USDT' });
+            settings = new Settings({ activeCryptoWallet: 'placeholder', walletNetwork: 'SOL' });
         }
 
         settings.wallets = {
             BTC:  { address: BTC?.address || '', network: 'Bitcoin Network' },
             ETH:  { address: ETH?.address || '', network: 'ERC-20 Network' },
-            USDT: { address: USDT?.address || '', network: 'TRC-20 Network' }
+            SOL: { address: SOL?.address || '', network: 'SPL Network' },
+                DOGE: { address: DOGE?.address || '', network: 'Dogecoin Network' }
         };
 
         await settings.save();

@@ -36,7 +36,7 @@ router.post('/deposit', protect, async (req, res) => {
             status: 'pending',
             walletAddressUsed,
             transactionHash: transactionHash || null,
-            coin: coin || 'USDT',
+            coin: coin || 'SOL',
             plan: planId
         });
 
@@ -98,7 +98,7 @@ router.post('/withdraw', protect, async (req, res) => {
             user: user._id,
             type: 'withdrawal',
             amount: parseFloat(amount),
-            coin: coin || 'USDT', // user's crypto
+            coin: coin || 'SOL', // user's crypto
             status: 'pending',
             walletAddress: walletAddress
         });

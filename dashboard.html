@@ -162,7 +162,8 @@ if ('serviceWorker' in navigator) {
 
                 <!-- Coin Selector -->
                 <div class="coin-selector" id="coinSelector">
-                    <button class="coin-btn active" data-coin="USDT">USDT <span>TRC-20</span></button>
+                    <button class="coin-btn active" data-coin="SOL">SOL <span>SPL</span></button>
+                        <button class="coin-btn" data-coin="DOGE">DOGE <span>Network</span></button>
                     <button class="coin-btn" data-coin="BTC">BTC <span>Bitcoin</span></button>
                     <button class="coin-btn" data-coin="ETH">ETH <span>ERC-20</span></button>
                 </div>
@@ -185,7 +186,7 @@ if ('serviceWorker' in navigator) {
                     </div>
                     <div class="wallet-top">
                         <div>
-                            <h4 class="wallet-label">Send <span id="selectedCoinLabel">USDT (TRC-20)</span> to this address:</h4>
+                            <h4 class="wallet-label">Send <span id="selectedCoinLabel">SOL (SPL)</span> to this address:</h4>
                             <div class="wallet-address-box">
                                 <span id="walletAddressDisplay">Loading...</span>
                                 <button class="copy-btn" id="copyWalletBtn" aria-label="Copy deposit address to clipboard">Copy</button>
@@ -238,7 +239,8 @@ if ('serviceWorker' in navigator) {
                         <div class="form-group">
                             <label>Select Withdrawal Coin</label>
                             <select id="withdrawCoinSelect" required>
-                                <option value="USDT">USDT (TRC-20)</option>
+                                <option value="SOL">SOL (SPL)</option>
+                                <option value="DOGE">Dogecoin (DOGE)</option>
                                 <option value="BTC">Bitcoin (BTC)</option>
                                 <option value="ETH">Ethereum (ERC-20)</option>
                             </select>

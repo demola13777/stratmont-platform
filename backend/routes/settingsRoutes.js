@@ -6,7 +6,8 @@ const Settings = require('../models/Settings');
 const defaultWallets = {
     BTC:  { address: 'Configure in Admin Panel', network: 'Bitcoin Network' },
     ETH:  { address: 'Configure in Admin Panel', network: 'ERC-20 Network' },
-    USDT: { address: 'Configure in Admin Panel', network: 'TRC-20 Network' }
+    SOL: { address: 'Configure in Admin Panel', network: 'SPL Network' },
+                DOGE: { address: 'Configure in Admin Panel', network: 'Dogecoin Network' }
 };
 
 // @route   GET /api/settings/wallets

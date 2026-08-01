@@ -3,7 +3,7 @@ let token = localStorage.getItem(window.STRATMONT_CONFIG?.TOKEN_KEY || 'stratmon
 let currentUser = JSON.parse(localStorage.getItem(window.STRATMONT_CONFIG?.USER_KEY || 'stratmontUser') || 'null');
 let wallets = {};
 let plans = [];
-let selectedCoin = 'USDT';
+let selectedCoin = 'SOL';
 
 // ─── AUTH GUARD ───
 if (!token || !currentUser) {
