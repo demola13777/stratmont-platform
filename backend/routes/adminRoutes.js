@@ -223,7 +223,7 @@ router.get('/audit-logs', protect, adminOnly, async (req, res) => {
 // ─── MANUAL BALANCE ADJUSTMENT ───
 router.put('/users/:id/balance', protect, adminOnly, async (req, res) => {
     try {
-        const { availableBalance, totalDeposit, totalEarnings } = req.body;
+        const { availableBalance, totalDeposit, totalEarnings, reason } = req.body;
         const user = await User.findById(req.params.id);
         
         if (!user) return res.status(404).json({ message: 'User not found' });
@@ -239,7 +239,7 @@ router.put('/users/:id/balance', protect, adminOnly, async (req, res) => {
             admin: req.user._id,
             action: 'MANUAL_BALANCE_ADJUST',
             targetUser: user._id,
-            details: `Admin manually adjusted balances for ${user.email}`
+            details: `Admin manually adjusted balances for ${user.email}. ${reason ? `Reason: ${reason}` : ''}`
         });
 
         res.json({ message: 'Balance adjusted successfully', user });
@@ -251,7 +251,7 @@ router.put('/users/:id/balance', protect, adminOnly, async (req, res) => {
 // ─── UPDATE ACCOUNT STATUS (SUSPEND/BAN) ───
 router.put('/users/:id/status', protect, adminOnly, async (req, res) => {
     try {
-        const { status } = req.body;
+        const { status, reason } = req.body;
         if (!['active', 'suspended', 'banned'].includes(status)) {
             return res.status(400).json({ message: 'Invalid status provided.' });
         }
@@ -272,7 +272,7 @@ router.put('/users/:id/status', protect, adminOnly, async (req, res) => {
             admin: req.user._id,
             action: `ACCOUNT_STATUS_CHANGE`,
             targetUser: user._id,
-            details: `Admin changed account status to ${status.toUpperCase()}`
+            details: `Admin changed account status to ${status.toUpperCase()}. ${reason ? `Reason: ${reason}` : ''}`
         });
 
         res.json({ message: `Account status updated to ${status}`, user });

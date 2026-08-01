@@ -3,6 +3,9 @@ let token = localStorage.getItem(window.STRATMONT_CONFIG?.TOKEN_KEY || 'stratmon
 let currentUser = JSON.parse(localStorage.getItem(window.STRATMONT_CONFIG?.USER_KEY || 'stratmontUser') || 'null');
 let allTxData = [];
 let currentFilter = 'all';
+let currentTxPage = 1;
+let currentUsersPage = 1;
+let allUsersData = [];
 
 // ─── AUTH GUARD ───
 if (!token || !currentUser) { window.location.href = 'auth.html'; }
@@ -60,7 +63,8 @@ const loadPendingTx = async () => {
     const el = document.getElementById('pendingTxTable');
     try {
         const res = await fetch(`${API}/admin/transactions`, { headers: headers() });
-        const txs = await res.json();
+        const resData = await res.json();
+        const txs = resData.data || resData;
         const pending = txs.filter(t => t.status === 'pending');
         if (!pending.length) { el.innerHTML = '<p class="empty-state">✓ No pending transactions. All caught up!</p>'; return; }
         el.innerHTML = renderTxTable(pending, true);
@@ -68,20 +72,43 @@ const loadPendingTx = async () => {
 };
 
 // ─── LOAD ALL TRANSACTIONS ───
-const loadAllTransactions = async () => {
+window.loadAllTransactions = async (page = 1) => {
+    currentTxPage = page;
     const el = document.getElementById('allTxTable');
     el.innerHTML = '<p class="empty-state">Loading...</p>';
     try {
-        const res = await fetch(`${API}/admin/transactions`, { headers: headers() });
-        allTxData = await res.json();
+        const res = await fetch(`${API}/admin/transactions?page=${page}&limit=20`, { headers: headers() });
+        const data = await res.json();
+        allTxData = data.data || data;
+        const totalPages = data.pagination?.totalPages || 1;
+        
         renderFilteredTx();
+        
+        const pgEl = document.getElementById('txPagination');
+        if (pgEl) {
+            pgEl.style.display = 'flex';
+            document.getElementById('txPageInfo').textContent = `Page ${page} of ${totalPages}`;
+            document.getElementById('txPrevBtn').onclick = () => loadAllTransactions(page - 1);
+            document.getElementById('txPrevBtn').disabled = page <= 1;
+            document.getElementById('txNextBtn').onclick = () => loadAllTransactions(page + 1);
+            document.getElementById('txNextBtn').disabled = page >= totalPages;
+        }
     } catch (err) { el.innerHTML = '<p class="empty-state">Error loading transactions.</p>'; }
 };
 
 const renderFilteredTx = () => {
     const el = document.getElementById('allTxTable');
-    const filtered = currentFilter === 'all' ? allTxData : allTxData.filter(t => t.status === currentFilter);
-    if (!filtered.length) { el.innerHTML = `<p class="empty-state">No ${currentFilter} transactions found.</p>`; return; }
+    const search = (document.getElementById('txSearchInput')?.value || '').toLowerCase();
+    
+    let filtered = currentFilter === 'all' ? allTxData : allTxData.filter(t => t.status === currentFilter);
+    if (search) {
+        filtered = filtered.filter(t => 
+            (t.user?.email || '').toLowerCase().includes(search) || 
+            (t.transactionHash || '').toLowerCase().includes(search)
+        );
+    }
+    
+    if (!filtered.length) { el.innerHTML = `<p class="empty-state">No transactions found.</p>`; return; }
     el.innerHTML = renderTxTable(filtered, true);
 };
 
@@ -95,6 +122,9 @@ document.querySelectorAll('.filter-btn').forEach(btn => {
     });
 });
 
+const txi = document.getElementById('txSearchInput');
+if (txi) txi.addEventListener('input', renderFilteredTx);
+
 // ─── RENDER TX TABLE ───
 const renderTxTable = (txs, showActions = false) => `
     <table class="data-table">
@@ -102,23 +132,31 @@ const renderTxTable = (txs, showActions = false) => `
             <tr>
                 <th>Date</th>
                 <th>User</th>
-                <th>Email</th>
+                <th>Type</th>
                 <th>Coin</th>
                 <th>Amount</th>
-                <th>TX Hash</th>
+                <th>Destination / Hash</th>
                 <th>Status</th>
                 ${showActions ? '<th>Actions</th>' : ''}
             </tr>
         </thead>
         <tbody>
-            ${txs.map(tx => `
+            ${txs.map(tx => {
+                const isDeposit = tx.type === 'deposit';
+                const destOrHash = isDeposit ? tx.transactionHash : tx.walletAddress;
+                return `
                 <tr>
                     <td>${fmtDate(tx.createdAt)}</td>
-                    <td>${tx.user?.name || 'Unknown'}</td>
-                    <td style="color:var(--muted);font-size:0.8rem;">${tx.user?.email || '—'}</td>
+                    <td>
+                        <div style="font-weight:500;">${tx.user?.name || 'Unknown'}</div>
+                        <div style="color:var(--muted);font-size:0.8rem;">${tx.user?.email || '—'}</div>
+                    </td>
+                    <td>
+                        <span style="font-size:0.8rem; padding: 2px 6px; border-radius: 4px; background: rgba(255,255,255,0.05); text-transform: uppercase;">${tx.type}</span>
+                    </td>
                     <td>${tx.coin || 'N/A'}</td>
-                    <td style="font-weight:600;">${fmt(tx.amount)}</td>
-                    <td style="font-size:0.75rem;color:var(--muted);max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${tx.transactionHash || ''}">${tx.transactionHash ? tx.transactionHash.substring(0, 18) + '...' : '—'}</td>
+                    <td style="font-weight:600; color: ${isDeposit ? '#10b981' : '#f59e0b'};">${isDeposit ? '+' : '-'}${fmt(tx.amount)}</td>
+                    <td style="font-size:0.75rem;color:var(--muted);max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${destOrHash || ''}">${destOrHash ? destOrHash.substring(0, 20) + '...' : '—'}</td>
                     <td><span class="badge ${tx.status}">${tx.status}</span></td>
                     ${showActions ? `
                     <td>
@@ -128,7 +166,8 @@ const renderTxTable = (txs, showActions = false) => `
                         ` : `<span style="color:var(--muted);font-size:0.8rem;">${tx.status === 'approved' ? '✓ Done' : '✗ Done'}</span>`}
                     </td>` : ''}
                 </tr>
-            `).join('')}
+                `;
+            }).join('')}
         </tbody>
     </table>
 `;
@@ -153,46 +192,80 @@ window.updateTx = async (id, status) => {
 };
 
 // ─── LOAD USERS ───
-const loadUsers = async () => {
+window.loadUsers = async (page = 1) => {
+    currentUsersPage = page;
     const el = document.getElementById('usersTable');
     el.innerHTML = '<p class="empty-state">Loading...</p>';
     try {
-        const res = await fetch(`${API}/admin/users`, { headers: headers() });
-        const users = await res.json();
-        if (!users.length) { el.innerHTML = '<p class="empty-state">No users found.</p>'; return; }
-        el.innerHTML = `
-            <table class="data-table">
-                <thead>
-                    <tr>
-                        <th>Name</th>
-                        <th>Email</th>
-                        <th>Status</th>
-                        <th>Balance</th>
-                        <th>Total Deposited</th>
-                        <th>Joined</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    ${users.map(u => `
-                        <tr>
-                            <td style="font-weight:500;">${u.name}</td>
-                            <td style="color:var(--muted);font-size:0.85rem;">${u.email}</td>
-                            <td><span class="badge ${u.role === 'admin' ? 'approved' : (u.status === 'suspended' || u.status === 'banned' ? 'rejected' : 'pending')}">${u.role === 'admin' ? 'admin' : u.status}</span></td>
-                            <td>${fmt(u.balances?.availableBalance)}</td>
-                            <td>${fmt(u.balances?.totalDeposit)}</td>
-                            <td style="color:var(--muted);font-size:0.8rem;">${fmtDate(u.createdAt)}</td>
-                            <td>
-                                <button class="btn-outline" style="padding: 0.2rem 0.5rem; font-size: 0.75rem;" onclick="openBalanceModal('${u._id}', '${u.name}', ${u.balances?.availableBalance || 0}, ${u.balances?.totalDeposit || 0}, ${u.balances?.totalEarnings || 0})">Balance</button>
-                                <button class="btn-outline" style="padding: 0.2rem 0.5rem; font-size: 0.75rem; margin-left: 0.5rem;" onclick="openStatusModal('${u._id}', '${u.name}', '${u.status || 'active'}')">Status</button>
-                            </td>
-                        </tr>
-                    `).join('')}
-                </tbody>
-            </table>
-        `;
+        const res = await fetch(`${API}/admin/users?page=${page}&limit=20`, { headers: headers() });
+        const resData = await res.json();
+        allUsersData = resData.data || resData;
+        const totalPages = resData.pagination?.totalPages || 1;
+        
+        renderFilteredUsers();
+        
+        const pgEl = document.getElementById('userPagination');
+        if (pgEl) {
+            pgEl.style.display = 'flex';
+            document.getElementById('userPageInfo').textContent = `Page ${page} of ${totalPages}`;
+            document.getElementById('userPrevBtn').onclick = () => loadUsers(page - 1);
+            document.getElementById('userPrevBtn').disabled = page <= 1;
+            document.getElementById('userNextBtn').onclick = () => loadUsers(page + 1);
+            document.getElementById('userNextBtn').disabled = page >= totalPages;
+        }
     } catch (err) { el.innerHTML = '<p class="empty-state">Error loading users.</p>'; }
 };
+
+const renderFilteredUsers = () => {
+    const el = document.getElementById('usersTable');
+    const search = (document.getElementById('userSearchInput')?.value || '').toLowerCase();
+    
+    let filtered = allUsersData;
+    if (search) {
+        filtered = filtered.filter(u => 
+            (u.name || '').toLowerCase().includes(search) || 
+            (u.email || '').toLowerCase().includes(search)
+        );
+    }
+    
+    if (!filtered.length) { el.innerHTML = '<p class="empty-state">No users found.</p>'; return; }
+    
+    el.innerHTML = `
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Status</th>
+                    <th>Balance</th>
+                    <th>Total Deposited</th>
+                    <th>Joined</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                ${filtered.map(u => `
+                    <tr>
+                        <td>
+                            <div style="font-weight:500;">${u.name}</div>
+                            <div style="color:var(--muted);font-size:0.85rem;">${u.email}</div>
+                        </td>
+                        <td><span class="badge ${u.role === 'admin' ? 'approved' : (u.status === 'suspended' || u.status === 'banned' ? 'rejected' : 'pending')}">${u.role === 'admin' ? 'admin' : u.status}</span></td>
+                        <td>${fmt(u.balances?.availableBalance)}</td>
+                        <td>${fmt(u.balances?.totalDeposit)}</td>
+                        <td style="color:var(--muted);font-size:0.8rem;">${fmtDate(u.createdAt)}</td>
+                        <td>
+                            <button class="btn-outline" style="padding: 0.2rem 0.5rem; font-size: 0.75rem;" onclick="openBalanceModal('${u._id}', '${u.name}', ${u.balances?.availableBalance || 0}, ${u.balances?.totalDeposit || 0}, ${u.balances?.totalEarnings || 0})">Balance</button>
+                            ${u._id === currentUser._id ? '' : `<button class="btn-outline" style="padding: 0.2rem 0.5rem; font-size: 0.75rem; margin-left: 0.5rem;" onclick="openStatusModal('${u._id}', '${u.name}', '${u.status || 'active'}')">Status</button>`}
+                        </td>
+                    </tr>
+                `).join('')}
+            </tbody>
+        </table>
+    `;
+};
+
+const usi = document.getElementById('userSearchInput');
+if (usi) usi.addEventListener('input', renderFilteredUsers);
 
 // ─── USER ACTIONS (MODALS) ───
 window.openModal = (id) => document.getElementById(id).classList.add('active');
@@ -213,14 +286,15 @@ document.getElementById('balanceForm').addEventListener('submit', async (e) => {
     const id = document.getElementById('balanceUserId').value;
     const avail = document.getElementById('modAvail').value;
     const dep = document.getElementById('modDeposit').value;
-    const earn = document.getElementById('modEarnings').value;
+    const earn = document.getElementById('modEarn').value;
+    const reason = document.getElementById('modBalanceReason')?.value || '';
     const alertEl = document.getElementById('balanceAlert');
 
     try {
         const res = await fetch(`${API}/admin/users/${id}/balance`, {
             method: 'PUT',
             headers: headers(),
-            body: JSON.stringify({ availableBalance: avail, totalDeposit: dep, totalEarnings: earn })
+            body: JSON.stringify({ availableBalance: avail, totalDeposit: dep, totalEarnings: earn, reason })
         });
         const data = await res.json();
         if (!res.ok) throw new Error(data.message);
@@ -248,13 +322,14 @@ document.getElementById('statusForm').addEventListener('submit', async (e) => {
     e.preventDefault();
     const id = document.getElementById('statusUserId').value;
     const status = document.getElementById('modStatus').value;
+    const reason = document.getElementById('modStatusReason')?.value || '';
     const alertEl = document.getElementById('statusAlert');
 
     try {
         const res = await fetch(`${API}/admin/users/${id}/status`, {
             method: 'PUT',
             headers: headers(),
-            body: JSON.stringify({ status })
+            body: JSON.stringify({ status, reason })
         });
         const data = await res.json();
         if (!res.ok) throw new Error(data.message);
