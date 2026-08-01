@@ -249,17 +249,20 @@
         
         // Simple scroll spy for docs sidebar
         document.addEventListener('DOMContentLoaded', () => {
-            const links = document.querySelectorAll('.docs nav link');
+            const links = document.querySelectorAll('.docs-nav-link');
             const sections = Array.from(links).map(link => {
-                const target = document.querySelector(link.getAttribute('href'));
-                return target;
+                const href = link.getAttribute('href');
+                if (href && href.startsWith('#')) {
+                    return document.querySelector(href);
+                }
+                return null;
             }).filter(Boolean);
             
             window.addEventListener('scroll', () => {
                 let current = '';
                 sections.forEach(section => {
                     const sectionTop = section.offsetTop;
-                    if (scrollY >= (sectionTop 150)) {
+                    if (scrollY >= (sectionTop - 150)) {
                         current = section.getAttribute('id');
                     }
                 });
