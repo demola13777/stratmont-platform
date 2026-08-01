@@ -398,14 +398,16 @@ document.getElementById('saveWalletsBtn').addEventListener('click', async () => 
 let currentAuditPage = 1;
 window.loadAuditLogs = async (page = 1) => {
     currentAuditPage = page;
-    const el = document.getElementById('view-audit');
+    const el = document.getElementById('auditTableContainer');
     if (!el) return;
     el.innerHTML = '<p class="empty-state">Loading audit logs...</p>';
     try {
         const res = await fetch(`${API}/admin/audit-logs?page=${page}&limit=20`, { headers: headers() });
         const data = await res.json();
-        const logs = data.logs || (Array.isArray(data) ? data : []);
-        const totalPages = data.totalPages || 1;
+        if (!res.ok) throw new Error(data.message || 'Error loading logs');
+        
+        const logs = data.data || [];
+        const totalPages = data.pagination?.totalPages || 1;
         
         if (!logs.length) { el.innerHTML = '<p class="empty-state">No audit logs found.</p>'; return; }
         
@@ -424,23 +426,35 @@ window.loadAuditLogs = async (page = 1) => {
                     ${logs.map(log => `
                         <tr>
                             <td>${fmtDate(log.createdAt)}</td>
-                            <td>${log.adminName || 'Unknown'}</td>
+                            <td style="font-weight:500;">
+                                ${log.admin?.name || 'Unknown'}
+                                <div style="color:var(--muted);font-size:0.8rem;">${log.admin?.email || '—'}</div>
+                            </td>
                             <td><span class="badge" style="background:var(--gold);color:#000;">${log.action}</span></td>
                             <td>${log.details || '—'}</td>
-                            <td>${log.targetUser || '—'}</td>
+                            <td style="font-weight:500;">
+                                ${log.targetUser ? log.targetUser.name : '—'}
+                                ${log.targetUser ? `<div style="color:var(--muted);font-size:0.8rem;">${log.targetUser.email}</div>` : ''}
+                            </td>
                         </tr>
                     `).join('')}
                 </tbody>
             </table>
-            <div style="display:flex; justify-content:center; gap:10px; margin-top:20px;">
-                <button class="btn-gold" onclick="loadAuditLogs(${page - 1})" ${page <= 1 ? 'disabled' : ''}>Prev</button>
-                <span style="color:var(--text-muted); align-self:center;">Page ${page} of ${totalPages}</span>
-                <button class="btn-gold" onclick="loadAuditLogs(${page + 1})" ${page >= totalPages ? 'disabled' : ''}>Next</button>
-            </div>
         `;
+        
+        // Add pagination
+        if (totalPages > 1) {
+            html += `
+                <div class="pagination-controls" style="display:flex; margin-top:1.5rem;">
+                    <button class="btn-outline" onclick="loadAuditLogs(${page - 1})" ${page <= 1 ? 'disabled' : ''}>Previous</button>
+                    <span style="font-size:0.85rem; color:var(--muted);">Page ${page} of ${totalPages}</span>
+                    <button class="btn-outline" onclick="loadAuditLogs(${page + 1})" ${page >= totalPages ? 'disabled' : ''}>Next</button>
+                </div>
+            `;
+        }
         el.innerHTML = html;
     } catch (err) {
-        el.innerHTML = '<p class="empty-state">Error loading audit logs.</p>';
+        el.innerHTML = `<p class="empty-state" style="color:var(--red);">Error loading audit logs: ${err.message}</p>`;
     }
 };
 

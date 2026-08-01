@@ -131,11 +131,17 @@
             <div class="view" id="view-transactions">
                 <div class="section-card">
                     <h3 class="section-title">All Transactions</h3>
-                    <div class="filter-bar">
-                        <button class="filter-btn active" data-filter="all">All</button>
-                        <button class="filter-btn" data-filter="pending">Pending</button>
-                        <button class="filter-btn" data-filter="approved">Approved</button>
-                        <button class="filter-btn" data-filter="rejected">Rejected</button>
+                    <div class="filter-bar" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:1rem;">
+                        <div style="display:flex; gap:0.5rem;">
+                            <button class="filter-btn active" data-filter="all">All</button>
+                            <button class="filter-btn" data-filter="pending">Pending</button>
+                            <button class="filter-btn" data-filter="approved">Approved</button>
+                            <button class="filter-btn" data-filter="rejected">Rejected</button>
+                        </div>
+                        <div class="search-bar-elevated">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                            <input type="text" id="txSearchInput" placeholder="Search by email or hash..." aria-label="Search transactions">
+                        </div>
                     </div>
                     <div class="table-responsive">
                         <div id="allTxTable"><p class="empty-state">Loading...</p></div>
@@ -208,7 +214,7 @@
                 <div class="section-card">
                     <h3 class="section-title">System Audit Logs</h3>
                     <p class="view-subtitle">Track all administrative actions across the platform for security and compliance.</p>
-                    <div class="table-responsive">
+                    <div class="table-responsive" id="auditTableContainer">
                         <table class="audit-table">
                             <thead>
                                 <tr>

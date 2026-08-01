@@ -533,28 +533,119 @@
 .dash-alert.error { background:rgba(239,68,68,0.1); border:1px solid rgba(239,68,68,0.2); color:#f87171; }
 .dash-alert.success { background:rgba(16,185,129,0.1); border:1px solid rgba(16,185,129,0.2); color:#34d399; }
 
-/* ─── TRANSACTIONS TABLE ─── */
-#txTableWrapper {
+/* ─── DATA TABLES ─── */
+.table-responsive {
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
+    width: 100%;
 }
-.tx-table { width:100%; border-collapse:collapse; min-width: 500px; }
-.tx-table th {
-    text-align:left; padding:0.75rem 1rem;
-    font-size:0.75rem; color:var(--text-muted);
-    font-weight:500; text-transform:uppercase; letter-spacing:0.05em;
-    border-bottom:1px solid var(--border);
+.data-table { 
+    width: 100%; 
+    border-collapse: collapse; 
+    min-width: 800px; 
 }
-.tx-table td { padding:1rem; font-size:0.875rem; border-bottom:1px solid rgba(255,255,255,0.03); }
-.tx-table tr:last-child td { border-bottom:none; }
-.tx-table tr:hover td { background: var(--bg-card-hover); }
-.status-badge {
-    display:inline-block; padding:0.25rem 0.65rem;
-    border-radius:20px; font-size:0.75rem; font-weight:600;
+.data-table th {
+    text-align: left; 
+    padding: 1rem 1.25rem;
+    font-size: 0.75rem; 
+    color: var(--text-muted);
+    font-weight: 600; 
+    text-transform: uppercase; 
+    letter-spacing: 0.05em;
+    border-bottom: 1px solid var(--border);
+    white-space: nowrap;
 }
-.status-badge.pending { background:rgba(245,158,11,0.15); color:#f59e0b; }
-.status-badge.approved { background:rgba(16,185,129,0.15); color:var(--green); }
-.status-badge.rejected { background:rgba(239,68,68,0.15); color:var(--red); }
+.data-table td { 
+    padding: 1rem 1.25rem; 
+    font-size: 0.9rem; 
+    border-bottom: 1px solid rgba(255,255,255,0.03); 
+    color: var(--text-light);
+    vertical-align: middle;
+}
+[data-theme='light'] .data-table td { border-bottom-color: rgba(0,0,0,0.03); }
+.data-table tr:last-child td { border-bottom: none; }
+.data-table tr:hover td { background: var(--bg-card-hover); }
+
+/* ─── STATUS BADGES ─── */
+.badge {
+    display: inline-flex; 
+    align-items: center;
+    justify-content: center;
+    padding: 0.35rem 0.85rem;
+    border-radius: 20px; 
+    font-size: 0.75rem; 
+    font-weight: 600;
+    text-transform: capitalize;
+    white-space: nowrap;
+}
+.badge.pending { background: rgba(245,158,11,0.15); color: #f59e0b; border: 1px solid rgba(245,158,11,0.3); }
+.badge.approved { background: rgba(16,185,129,0.15); color: var(--green); border: 1px solid rgba(16,185,129,0.3); }
+.badge.rejected { background: rgba(239,68,68,0.15); color: var(--red); border: 1px solid rgba(239,68,68,0.3); }
+.badge.admin { background: rgba(59,130,246,0.15); color: var(--blue); border: 1px solid rgba(59,130,246,0.3); }
+.badge.suspended, .badge.banned { background: rgba(239,68,68,0.15); color: var(--red); border: 1px solid rgba(239,68,68,0.3); }
+
+/* ─── ACTION BUTTONS ─── */
+.btn-outline {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--text-light);
+    padding: 0.4rem 0.85rem;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-size: 0.8rem;
+    font-weight: 500;
+    font-family: inherit;
+    white-space: nowrap;
+}
+.btn-outline:hover:not(:disabled) {
+    border-color: var(--gold);
+    color: var(--gold);
+    background: rgba(212,175,55,0.05);
+}
+.btn-outline:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+.btn-approve, .btn-reject {
+    padding: 0.35rem 0.75rem;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.75rem;
+    font-weight: 600;
+    margin-right: 0.35rem;
+    transition: all 0.2s;
+    font-family: inherit;
+    white-space: nowrap;
+}
+.btn-approve {
+    background: rgba(16,185,129,0.1);
+    border: 1px solid rgba(16,185,129,0.3);
+    color: var(--green);
+}
+.btn-approve:hover { background: rgba(16,185,129,0.2); }
+.btn-reject {
+    background: rgba(239,68,68,0.1);
+    border: 1px solid rgba(239,68,68,0.3);
+    color: var(--red);
+}
+.btn-reject:hover { background: rgba(239,68,68,0.2); }
+
+/* ─── PAGINATION ─── */
+.pagination-controls {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+    justify-content: flex-end;
+    padding: 1rem 0;
+    border-top: 1px solid var(--border);
+    margin-top: 0.5rem;
+}
+.pagination-controls span {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    font-weight: 500;
+}
 
 /* ─── EMPTY STATE ─── */
 .empty-state { color:var(--text-muted); font-size:0.875rem; text-align:center; padding:2rem; }
@@ -892,8 +983,40 @@
 .s-stat b { font-size: 1.1rem; }
 .support-filters {
     display: flex;
-    gap: 0.5rem;
-    margin-bottom: 1rem;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-bottom: 1.25rem;
+}
+.support-filters select, .support-filters input {
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.1);
+    color: var(--text-light);
+    padding: 0.6rem 1rem;
+    border-radius: 8px;
+    font-family: inherit;
+    font-size: 0.85rem;
+    outline: none;
+    transition: border-color 0.2s, background 0.2s;
+}
+.support-filters select:focus, .support-filters input:focus {
+    border-color: var(--gold);
+    background: rgba(255,255,255,0.08);
+}
+.support-filters select option {
+    background: var(--bg-card);
+    color: var(--text-light);
+}
+[data-theme='light'] .support-filters select, [data-theme='light'] .support-filters input {
+    background: rgba(0,0,0,0.03);
+    border: 1px solid rgba(0,0,0,0.1);
+}
+[data-theme='light'] .support-filters select:focus, [data-theme='light'] .support-filters input:focus {
+    border-color: var(--gold);
+    background: rgba(0,0,0,0.05);
+}
+[data-theme='light'] .support-filters select option {
+    background: #fff;
+    color: #000;
 }
 .support-list {
     flex: 1;
