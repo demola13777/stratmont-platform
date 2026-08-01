@@ -119,6 +119,25 @@ router.get('/tickets/:id', protect, async (req, res) => {
       return res.status(401).json({ message: 'Not authorized' });
     }
     
+    // Mark messages as read
+    let modified = false;
+    if (req.user.role === 'user') {
+      ticket.messages.forEach(msg => {
+        if (msg.sender === 'admin' && !msg.read) {
+          msg.read = true;
+          modified = true;
+        }
+      });
+    } else if (req.user.role === 'admin') {
+      ticket.messages.forEach(msg => {
+        if (msg.sender === 'user' && !msg.read) {
+          msg.read = true;
+          modified = true;
+        }
+      });
+    }
+    if (modified) await ticket.save();
+    
     res.json(ticket);
   } catch (error) {
     res.status(500).json({ message: 'Server error' });

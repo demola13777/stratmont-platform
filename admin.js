@@ -190,10 +190,8 @@ const renderTxTable = (txs) => `
                         <div style="display:flex; align-items:center; gap:0.5rem;">
                             <span class="badge ${esc(tx.status)}">${esc(tx.status)}</span>
                             ${tx.status === 'pending' ? `
-                                <div style="display:flex;">
-                                    <button class="btn-approve" onclick="this.disabled=true; this.nextElementSibling.disabled=true; this.textContent='Wait...'; updateTx('${tx._id}', 'approved')">Approve</button>
-                                    <button class="btn-reject" onclick="this.disabled=true; this.previousElementSibling.disabled=true; this.textContent='Wait...'; updateTx('${tx._id}', 'rejected')">Reject</button>
-                                </div>
+                                <button class="btn-approve" onclick="this.disabled=true; this.nextElementSibling.disabled=true; this.textContent='Wait...'; updateTx('${tx._id}', 'approved')">Approve</button>
+                                <button class="btn-reject" onclick="this.disabled=true; this.previousElementSibling.disabled=true; this.textContent='Wait...'; updateTx('${tx._id}', 'rejected')">Reject</button>
                             ` : ''}
                         </div>
                     </td>

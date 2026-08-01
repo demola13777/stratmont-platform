@@ -132,7 +132,7 @@ class SupportChatWidget {
               
               <!-- Action Banner (Resolved/Closed) -->
               <div class="chat-action-banner" id="chatActionBanner" style="display: none;">
-                <div id="chatResolvedText" style="font-size: 0.85rem; color: var(--chat-text-muted); margin-bottom: 10px;">This conversation is marked as resolved.</div>
+                <div id="chatResolvedText" style="font-size: 0.85rem; color: var(--chat-text-muted); margin-bottom: 10px;">This conversation is marked as resolved and will be archived soon.</div>
                 <button class="chat-action-btn" id="chatReopenBtn">Reopen Conversation</button>
               </div>
 
@@ -345,7 +345,18 @@ class SupportChatWidget {
         headers: { 'Authorization': `Bearer ${this.token}` }
       });
       if (res.ok) {
-        this.tickets = await res.json();
+        let allTickets = await res.json();
+        // Archive resolved/closed tickets older than 5 minutes
+        this.tickets = allTickets.filter(t => {
+          if (t.status === 'resolved' || t.status === 'closed') {
+            const resolvedTime = new Date(t.resolvedAt || t.updatedAt).getTime();
+            if (Date.now() - resolvedTime > 5 * 60 * 1000) {
+              return false;
+            }
+          }
+          return true;
+        });
+        
         this.renderConversationsList();
         this.recalculateUnreadCount();
       }
@@ -358,7 +369,10 @@ class SupportChatWidget {
     this.unreadCount = 0;
     this.tickets.forEach(t => {
       t.messages.forEach(m => {
-        if (m.sender === 'admin' && !m.read && t._id !== this.activeTicketId) {
+        if (t._id === this.activeTicketId) {
+           // Instantly mark as read locally so badge stays hidden
+           m.read = true;
+        } else if (m.sender === 'admin' && !m.read) {
           this.unreadCount++;
         }
       });
