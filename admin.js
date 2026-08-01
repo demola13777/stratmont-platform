@@ -103,7 +103,15 @@ window.loadAllTransactions = async (page = 1) => {
     const el = document.getElementById('allTxTable');
     el.innerHTML = '<p class="empty-state">Loading...</p>';
     try {
-        const res = await apiFetch(`${API}/admin/transactions?page=${page}&limit=5`, { headers: headers() });
+        let url = `${API}/admin/transactions?page=${page}&limit=5`;
+        if (currentFilter && currentFilter !== 'all') {
+            url += `&status=${currentFilter}`;
+        }
+        const sq = document.getElementById('txSearchInput')?.value;
+        if (sq) {
+            url += `&search=${encodeURIComponent(sq)}`;
+        }
+        const res = await apiFetch(url, { headers: headers() });
         const data = await res.json();
         allTxData = data.data || data;
         const totalPages = data.pagination?.totalPages || 1;
@@ -134,7 +142,7 @@ document.querySelectorAll('.filter-btn').forEach(btn => {
         document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
         currentFilter = btn.dataset.filter;
-        renderFilteredTx();
+        loadAllTransactions(1);
     });
 });
 
