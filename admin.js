@@ -481,8 +481,10 @@ const renderSupportList = () => {
     }).join('');
 };
 
-document.getElementById('supportStatusFilter').addEventListener('change', renderSupportList);
-document.getElementById('supportSearch').addEventListener('input', renderSupportList);
+const sf = document.getElementById('supportStatusFilter');
+if (sf) sf.addEventListener('change', renderSupportList);
+const ss = document.getElementById('supportSearch');
+if (ss) ss.addEventListener('input', renderSupportList);
 
 window.openSupportTicket = async (ticketId) => {
     activeTicketId = ticketId;
