@@ -137,9 +137,9 @@ const renderFilteredTx = () => {
 };
 
 // Filter buttons
-document.querySelectorAll('.filter-btn').forEach(btn => {
+document.querySelectorAll('#view-transactions .filter-btn').forEach(btn => {
     btn.addEventListener('click', () => {
-        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('#view-transactions .filter-btn').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
         currentFilter = btn.dataset.filter;
         loadAllTransactions(1);
@@ -565,6 +565,17 @@ const renderSupportList = () => {
     const search = document.getElementById('supportSearch').value.toLowerCase();
     
     let filtered = supportTickets;
+    
+    // Auto-archive resolved/closed tickets older than 5 minutes
+    filtered = filtered.filter(t => {
+        if (t.status === 'resolved' || t.status === 'closed') {
+            const resolvedTime = new Date(t.resolvedAt || t.updatedAt).getTime();
+            if (Date.now() - resolvedTime > 5 * 60 * 1000) {
+                return false;
+            }
+        }
+        return true;
+    });
     
     if (filter !== 'all') {
         filtered = filtered.filter(t => t.status === filter);
