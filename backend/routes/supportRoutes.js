@@ -360,6 +360,11 @@ router.post('/admin/tickets/:id/messages', protect, adminCheck, upload.single('a
 router.put('/admin/tickets/:id/status', protect, adminCheck, async (req, res) => {
   try {
     const { status } = req.body;
+    
+    if (!['open', 'pending', 'resolved', 'closed'].includes(status)) {
+      return res.status(400).json({ message: 'Invalid ticket status.' });
+    }
+
     const ticket = await SupportTicket.findById(req.params.id);
     
     if (!ticket) {

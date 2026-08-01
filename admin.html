@@ -275,7 +275,7 @@
 
 <!-- Modals -->
 <div class="modal-overlay" id="balanceModal">
-    <div class="modal-box">
+    <div class="modal-box" role="dialog" aria-modal="true" aria-labelledby="balanceModalUser">
         <h3 class="modal-title">Adjust Balance</h3>
         <p id="balanceModalUser" style="font-size:0.9rem; color:var(--text-muted); margin-bottom:1rem;"></p>
         <div id="balanceAlert" class="dash-alert" style="display:none; font-size:0.8rem; padding:10px;"></div>
@@ -298,7 +298,7 @@
                 <input type="text" id="modBalanceReason" placeholder="e.g., Manual deposit correction">
             </div>
             <div class="modal-actions">
-                <button class="btn-outline" onclick="closeModal('balanceModal')">Cancel</button>
+                <button type="button" class="btn-outline" onclick="closeModal('balanceModal')">Cancel</button>
                 <button type="submit" class="btn-gold" style="flex:1;">Save Changes</button>
             </div>
         </form>
@@ -306,7 +306,7 @@
 </div>
 
 <div class="modal-overlay" id="statusModal">
-    <div class="modal-box">
+    <div class="modal-box" role="dialog" aria-modal="true" aria-labelledby="statusModalUser">
         <h3 class="modal-title">Account Status</h3>
         <p id="statusModalUser" style="font-size:0.9rem; color:var(--text-muted); margin-bottom:1rem;"></p>
         <div id="statusAlert" class="dash-alert" style="display:none; font-size:0.8rem; padding:10px;"></div>
@@ -325,7 +325,7 @@
                 <input type="text" id="modStatusReason" placeholder="e.g., Suspicious activity detected">
             </div>
             <div class="modal-actions">
-                <button class="btn-outline" onclick="closeModal('statusModal')">Cancel</button>
+                <button type="button" class="btn-outline" onclick="closeModal('statusModal')">Cancel</button>
                 <button type="submit" class="btn-gold" style="flex:1;">Update Status</button>
             </div>
         </form>

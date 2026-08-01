@@ -19,8 +19,34 @@ const fmt = n => '$' + parseFloat(n || 0).toLocaleString('en-US', { minimumFract
 const fmtDate = d => new Date(d).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
 const headers = () => ({ 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` });
 
+const esc = (str) => {
+    if (!str && str !== 0) return '';
+    return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+};
+
+const apiFetch = async (url, options = {}) => {
+    try {
+        const res = await window.fetch(url, options);
+        if (res.status === 401 || res.status === 403) {
+            localStorage.clear();
+            window.location.href = 'auth.html';
+            throw new Error('Unauthorized');
+        }
+        return res;
+    } catch (err) {
+        console.error('API Fetch Error:', err);
+        throw err;
+    }
+};
+
 // ─── VIEW ROUTING ───
 const switchView = (viewId) => {
+    if (supportPollInterval) clearInterval(supportPollInterval);
     document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
     document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
     document.getElementById(`view-${viewId}`).classList.add('active');
@@ -48,8 +74,8 @@ document.getElementById('adminLogout').addEventListener('click', () => {
 // ─── LOAD STATS ───
 const loadStats = async () => {
     try {
-        const res = await fetch(`${API}/admin/stats`, { headers: headers() });
-        if (res.status === 401 || res.status === 403) { localStorage.clear(); window.location.href = 'auth.html'; return; }
+        const res = await apiFetch(`${API}/admin/stats`, { headers: headers() });
+        
         const data = await res.json();
         document.getElementById('statUsers').textContent = data.totalUsers;
         document.getElementById('statDeposits').textContent = fmt(data.totalApprovedDeposits);
@@ -62,7 +88,7 @@ const loadStats = async () => {
 const loadPendingTx = async () => {
     const el = document.getElementById('pendingTxTable');
     try {
-        const res = await fetch(`${API}/admin/transactions`, { headers: headers() });
+        const res = await apiFetch(`${API}/admin/transactions`, { headers: headers() });
         const resData = await res.json();
         const txs = resData.data || resData;
         const pending = txs.filter(t => t.status === 'pending');
@@ -77,7 +103,7 @@ window.loadAllTransactions = async (page = 1) => {
     const el = document.getElementById('allTxTable');
     el.innerHTML = '<p class="empty-state">Loading...</p>';
     try {
-        const res = await fetch(`${API}/admin/transactions?page=${page}&limit=20`, { headers: headers() });
+        const res = await apiFetch(`${API}/admin/transactions?page=${page}&limit=5`, { headers: headers() });
         const data = await res.json();
         allTxData = data.data || data;
         const totalPages = data.pagination?.totalPages || 1;
@@ -98,18 +124,8 @@ window.loadAllTransactions = async (page = 1) => {
 
 const renderFilteredTx = () => {
     const el = document.getElementById('allTxTable');
-    const search = (document.getElementById('txSearchInput')?.value || '').toLowerCase();
-    
-    let filtered = currentFilter === 'all' ? allTxData : allTxData.filter(t => t.status === currentFilter);
-    if (search) {
-        filtered = filtered.filter(t => 
-            (t.user?.email || '').toLowerCase().includes(search) || 
-            (t.transactionHash || '').toLowerCase().includes(search)
-        );
-    }
-    
-    if (!filtered.length) { el.innerHTML = `<p class="empty-state">No transactions found.</p>`; return; }
-    el.innerHTML = renderTxTable(filtered, true);
+    if (!allTxData.length) { el.innerHTML = `<p class="empty-state">No transactions found.</p>`; return; }
+    el.innerHTML = renderTxTable(allTxData, true);
 };
 
 // Filter buttons
@@ -122,11 +138,17 @@ document.querySelectorAll('.filter-btn').forEach(btn => {
     });
 });
 
+let txSearchTimeout;
 const txi = document.getElementById('txSearchInput');
-if (txi) txi.addEventListener('input', renderFilteredTx);
+if (txi) txi.addEventListener('input', () => {
+    clearTimeout(txSearchTimeout);
+    txSearchTimeout = setTimeout(() => {
+        loadAllTransactions(1);
+    }, 300);
+});
 
 // ─── RENDER TX TABLE ───
-const renderTxTable = (txs, showActions = false) => `
+const renderTxTable = (txs) => `
     <table class="data-table">
         <thead>
             <tr>
@@ -137,7 +159,6 @@ const renderTxTable = (txs, showActions = false) => `
                 <th>Amount</th>
                 <th>Destination / Hash</th>
                 <th>Status</th>
-                ${showActions ? '<th>Actions</th>' : ''}
             </tr>
         </thead>
         <tbody>
@@ -148,23 +169,26 @@ const renderTxTable = (txs, showActions = false) => `
                 <tr>
                     <td>${fmtDate(tx.createdAt)}</td>
                     <td>
-                        <div style="font-weight:500;">${tx.user?.name || 'Unknown'}</div>
-                        <div style="color:var(--muted);font-size:0.8rem;">${tx.user?.email || '—'}</div>
+                        <div style="font-weight:500;">${esc(tx.user?.name || 'Unknown')}</div>
+                        <div style="color:var(--muted);font-size:0.8rem;">${esc(tx.user?.email || '—')}</div>
                     </td>
                     <td>
-                        <span style="font-size:0.8rem; padding: 2px 6px; border-radius: 4px; background: rgba(255,255,255,0.05); text-transform: uppercase;">${tx.type}</span>
+                        <span style="font-size:0.8rem; padding: 2px 6px; border-radius: 4px; background: rgba(255,255,255,0.05); text-transform: uppercase;">${esc(tx.type)}</span>
                     </td>
-                    <td>${tx.coin || 'N/A'}</td>
+                    <td>${esc(tx.coin || 'N/A')}</td>
                     <td style="font-weight:600; color: ${isDeposit ? '#10b981' : '#f59e0b'};">${isDeposit ? '+' : '-'}${fmt(tx.amount)}</td>
-                    <td style="font-size:0.75rem;color:var(--muted);max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${destOrHash || ''}">${destOrHash ? destOrHash.substring(0, 20) + '...' : '—'}</td>
-                    <td><span class="badge ${tx.status}">${tx.status}</span></td>
-                    ${showActions ? `
+                    <td style="font-size:0.75rem;color:var(--muted);max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${esc(destOrHash || '')}">${esc(destOrHash ? destOrHash.substring(0, 20) + '...' : '—')}</td>
                     <td>
-                        ${tx.status === 'pending' ? `
-                            <button class="btn-approve" onclick="updateTx('${tx._id}', 'approved')">Approve</button>
-                            <button class="btn-reject" onclick="updateTx('${tx._id}', 'rejected')">Reject</button>
-                        ` : `<span style="color:var(--muted);font-size:0.8rem;">${tx.status === 'approved' ? '✓ Done' : '✗ Done'}</span>`}
-                    </td>` : ''}
+                        <div style="display:flex; align-items:center; gap:0.5rem;">
+                            <span class="badge ${esc(tx.status)}">${esc(tx.status)}</span>
+                            ${tx.status === 'pending' ? `
+                                <div style="display:flex;">
+                                    <button class="btn-approve" onclick="this.disabled=true; this.nextElementSibling.disabled=true; this.textContent='Wait...'; updateTx('${tx._id}', 'approved')">Approve</button>
+                                    <button class="btn-reject" onclick="this.disabled=true; this.previousElementSibling.disabled=true; this.textContent='Wait...'; updateTx('${tx._id}', 'rejected')">Reject</button>
+                                </div>
+                            ` : ''}
+                        </div>
+                    </td>
                 </tr>
                 `;
             }).join('')}
@@ -175,7 +199,7 @@ const renderTxTable = (txs, showActions = false) => `
 // ─── APPROVE / REJECT ───
 window.updateTx = async (id, status) => {
     try {
-        const res = await fetch(`${API}/admin/transactions/${id}`, {
+        const res = await apiFetch(`${API}/admin/transactions/${id}`, {
             method: 'PUT',
             headers: headers(),
             body: JSON.stringify({ status })
@@ -197,7 +221,7 @@ window.loadUsers = async (page = 1) => {
     const el = document.getElementById('usersTable');
     el.innerHTML = '<p class="empty-state">Loading...</p>';
     try {
-        const res = await fetch(`${API}/admin/users?page=${page}&limit=20`, { headers: headers() });
+        const res = await apiFetch(`${API}/admin/users?page=${page}&limit=5`, { headers: headers() });
         const resData = await res.json();
         allUsersData = resData.data || resData;
         const totalPages = resData.pagination?.totalPages || 1;
@@ -218,16 +242,7 @@ window.loadUsers = async (page = 1) => {
 
 const renderFilteredUsers = () => {
     const el = document.getElementById('usersTable');
-    const search = (document.getElementById('userSearchInput')?.value || '').toLowerCase();
-    
     let filtered = allUsersData;
-    if (search) {
-        filtered = filtered.filter(u => 
-            (u.name || '').toLowerCase().includes(search) || 
-            (u.email || '').toLowerCase().includes(search)
-        );
-    }
-    
     if (!filtered.length) { el.innerHTML = '<p class="empty-state">No users found.</p>'; return; }
     
     el.innerHTML = `
@@ -246,16 +261,16 @@ const renderFilteredUsers = () => {
                 ${filtered.map(u => `
                     <tr>
                         <td>
-                            <div style="font-weight:500;">${u.name}</div>
-                            <div style="color:var(--muted);font-size:0.85rem;">${u.email}</div>
+                            <div style="font-weight:500;">${esc(u.name)}</div>
+                            <div style="color:var(--muted);font-size:0.85rem;">${esc(u.email)}</div>
                         </td>
-                        <td><span class="badge ${u.role === 'admin' ? 'approved' : (u.status === 'suspended' || u.status === 'banned' ? 'rejected' : 'pending')}">${u.role === 'admin' ? 'admin' : u.status}</span></td>
+                        <td><span class="badge ${u.role === 'admin' ? 'approved' : (u.status || 'active')}">${u.role === 'admin' ? 'admin' : (u.status || 'active')}</span></td>
                         <td>${fmt(u.balances?.availableBalance)}</td>
                         <td>${fmt(u.balances?.totalDeposit)}</td>
                         <td style="color:var(--muted);font-size:0.8rem;">${fmtDate(u.createdAt)}</td>
                         <td>
-                            <button class="btn-outline" style="padding: 0.2rem 0.5rem; font-size: 0.75rem;" onclick="openBalanceModal('${u._id}', '${u.name}', ${u.balances?.availableBalance || 0}, ${u.balances?.totalDeposit || 0}, ${u.balances?.totalEarnings || 0})">Balance</button>
-                            ${u._id === currentUser._id ? '' : `<button class="btn-outline" style="padding: 0.2rem 0.5rem; font-size: 0.75rem; margin-left: 0.5rem;" onclick="openStatusModal('${u._id}', '${u.name}', '${u.status || 'active'}')">Status</button>`}
+                            <button class="btn-outline" style="padding: 0.2rem 0.5rem; font-size: 0.75rem;" onclick="openBalanceModal('${u._id}', '${esc(u.name)}', ${u.balances?.availableBalance || 0}, ${u.balances?.totalDeposit || 0}, ${u.balances?.totalEarnings || 0})">Balance</button>
+                            ${u._id === currentUser._id ? '' : `<button class="btn-outline" style="padding: 0.2rem 0.5rem; font-size: 0.75rem; margin-left: 0.5rem;" onclick="openStatusModal('${u._id}', '${esc(u.name)}', '${u.status || 'active'}')">Status</button>`}
                         </td>
                     </tr>
                 `).join('')}
@@ -264,8 +279,14 @@ const renderFilteredUsers = () => {
     `;
 };
 
+let userSearchTimeout;
 const usi = document.getElementById('userSearchInput');
-if (usi) usi.addEventListener('input', renderFilteredUsers);
+if (usi) usi.addEventListener('input', () => {
+    clearTimeout(userSearchTimeout);
+    userSearchTimeout = setTimeout(() => {
+        loadUsers(1);
+    }, 300);
+});
 
 // ─── USER ACTIONS (MODALS) ───
 window.openModal = (id) => document.getElementById(id).classList.add('active');
@@ -276,7 +297,7 @@ window.openBalanceModal = (id, name, avail, dep, earn) => {
     document.getElementById('balanceModalUser').textContent = `Editing balances for ${name}`;
     document.getElementById('modAvail').value = avail;
     document.getElementById('modDeposit').value = dep;
-    document.getElementById('modEarnings').value = earn;
+    document.getElementById('modEarn').value = earn;
     document.getElementById('balanceAlert').style.display = 'none';
     openModal('balanceModal');
 };
@@ -291,7 +312,7 @@ document.getElementById('balanceForm').addEventListener('submit', async (e) => {
     const alertEl = document.getElementById('balanceAlert');
 
     try {
-        const res = await fetch(`${API}/admin/users/${id}/balance`, {
+        const res = await apiFetch(`${API}/admin/users/${id}/balance`, {
             method: 'PUT',
             headers: headers(),
             body: JSON.stringify({ availableBalance: avail, totalDeposit: dep, totalEarnings: earn, reason })
@@ -326,7 +347,7 @@ document.getElementById('statusForm').addEventListener('submit', async (e) => {
     const alertEl = document.getElementById('statusAlert');
 
     try {
-        const res = await fetch(`${API}/admin/users/${id}/status`, {
+        const res = await apiFetch(`${API}/admin/users/${id}/status`, {
             method: 'PUT',
             headers: headers(),
             body: JSON.stringify({ status, reason })
@@ -348,7 +369,7 @@ document.getElementById('statusForm').addEventListener('submit', async (e) => {
 // ─── LOAD WALLETS ───
 const loadWallets = async () => {
     try {
-        const res = await fetch(`${API}/admin/settings/wallets`, { headers: headers() });
+        const res = await apiFetch(`${API}/admin/settings/wallets`, { headers: headers() });
         const wallets = await res.json();
         if (wallets.BTC) document.getElementById('walletBTC').value = wallets.BTC.address || '';
         if (wallets.ETH) document.getElementById('walletETH').value = wallets.ETH.address || '';
@@ -370,7 +391,7 @@ document.getElementById('saveWalletsBtn').addEventListener('click', async () => 
     btn.disabled = true;
 
     try {
-        const res = await fetch(`${API}/admin/settings/wallets`, {
+        const res = await apiFetch(`${API}/admin/settings/wallets`, {
             method: 'PUT',
             headers: headers(),
             body: JSON.stringify({
@@ -402,7 +423,7 @@ window.loadAuditLogs = async (page = 1) => {
     if (!el) return;
     el.innerHTML = '<p class="empty-state">Loading audit logs...</p>';
     try {
-        const res = await fetch(`${API}/admin/audit-logs?page=${page}&limit=20`, { headers: headers() });
+        const res = await apiFetch(`${API}/admin/audit-logs?page=${page}&limit=5`, { headers: headers() });
         const data = await res.json();
         if (!res.ok) throw new Error(data.message || 'Error loading logs');
         
@@ -427,14 +448,14 @@ window.loadAuditLogs = async (page = 1) => {
                         <tr>
                             <td>${fmtDate(log.createdAt)}</td>
                             <td style="font-weight:500;">
-                                ${log.admin?.name || 'Unknown'}
-                                <div style="color:var(--muted);font-size:0.8rem;">${log.admin?.email || '—'}</div>
+                                ${esc(log.admin?.name || 'Unknown')}
+                                <div style="color:var(--muted);font-size:0.8rem;">${esc(log.admin?.email || '—')}</div>
                             </td>
-                            <td><span class="badge" style="background:var(--gold);color:#000;">${log.action}</span></td>
-                            <td>${log.details || '—'}</td>
+                            <td><span class="badge" style="background:var(--gold);color:#000;">${esc(log.action)}</span></td>
+                            <td>${esc(log.details || '—')}</td>
                             <td style="font-weight:500;">
-                                ${log.targetUser ? log.targetUser.name : '—'}
-                                ${log.targetUser ? `<div style="color:var(--muted);font-size:0.8rem;">${log.targetUser.email}</div>` : ''}
+                                ${esc(log.targetUser ? log.targetUser.name : '—')}
+                                ${log.targetUser ? `<div style="color:var(--muted);font-size:0.8rem;">${esc(log.targetUser.email)}</div>` : ''}
                             </td>
                         </tr>
                     `).join('')}
@@ -445,10 +466,10 @@ window.loadAuditLogs = async (page = 1) => {
         // Add pagination
         if (totalPages > 1) {
             html += `
-                <div class="pagination-controls" style="display:flex; margin-top:1.5rem;">
-                    <button class="btn-outline" onclick="loadAuditLogs(${page - 1})" ${page <= 1 ? 'disabled' : ''}>Previous</button>
+                <div class="pagination-controls" style="display:flex; justify-content:space-between; align-items:center; margin-top:1.5rem; padding-top:1rem; border-top:1px solid rgba(255,255,255,0.05);">
+                    <button class="btn-outline" style="padding:0.4rem 1rem; font-size:0.8rem;" onclick="loadAuditLogs(${page - 1})" ${page <= 1 ? 'disabled' : ''}>Previous</button>
                     <span style="font-size:0.85rem; color:var(--muted);">Page ${page} of ${totalPages}</span>
-                    <button class="btn-outline" onclick="loadAuditLogs(${page + 1})" ${page >= totalPages ? 'disabled' : ''}>Next</button>
+                    <button class="btn-outline" style="padding:0.4rem 1rem; font-size:0.8rem;" onclick="loadAuditLogs(${page + 1})" ${page >= totalPages ? 'disabled' : ''}>Next</button>
                 </div>
             `;
         }
@@ -499,7 +520,7 @@ let supportPollInterval = null;
 
 const loadSupportTickets = async () => {
     try {
-        const res = await fetch(`${API}/support/admin/tickets`, { headers: headers() });
+        const res = await apiFetch(`${API}/support/admin/tickets`, { headers: headers() });
         if (res.ok) {
             supportTickets = await res.json();
             renderSupportStats();
@@ -562,9 +583,9 @@ const renderSupportList = () => {
                     <span class="support-item-time">${fmtDate(t.createdAt)}</span>
                 </div>
                 <div class="support-item-title">
-                    ${unreadCount > 0 ? '<span style="color:var(--red);">●</span> ' : ''}${t.subject}
+                    ${unreadCount > 0 ? '<span style="color:var(--red);">●</span> ' : ''}${esc(t.subject)}
                 </div>
-                <div style="font-size: 0.75rem; color: var(--muted);">${t.user.name}</div>
+                <div style="font-size: 0.75rem; color: var(--muted);">${esc(t.user.name)}</div>
             </div>
         `;
     }).join('');
@@ -583,7 +604,7 @@ window.openSupportTicket = async (ticketId) => {
     detailEl.innerHTML = '<div class="support-empty-state">Loading...</div>';
     
     try {
-        const res = await fetch(`${API}/support/tickets/${ticketId}`, { headers: headers() });
+        const res = await apiFetch(`${API}/support/tickets/${ticketId}`, { headers: headers() });
         if (res.ok) {
             const ticket = await res.json();
             
@@ -600,8 +621,8 @@ window.openSupportTicket = async (ticketId) => {
                     <div class="support-user-info" style="display:flex; align-items:center;">
                         <button class="support-back-btn" onclick="closeSupportTicket()">⬅ Back</button>
                         <div>
-                            <h3>${ticket.subject} <span style="font-size:0.8rem; color:var(--muted); font-weight:normal;">#${ticket.ticketId}</span></h3>
-                            <p>${ticket.user.name} (${ticket.user.email})</p>
+                            <h3>${esc(ticket.subject)} <span style="font-size:0.8rem; color:var(--muted); font-weight:normal;">#${ticket.ticketId}</span></h3>
+                            <p>${esc(ticket.user.name)} (${esc(ticket.user.email)})</p>
                         </div>
                     </div>
                     <div class="support-actions">
@@ -616,12 +637,12 @@ window.openSupportTicket = async (ticketId) => {
                 <div class="support-msgs" id="supportMsgs">
                     ${ticket.messages.map(m => `
                         <div class="s-msg ${m.sender === 'admin' ? 'admin' : 'user'}">
-                            <div class="s-msg-name">${m.senderName}</div>
+                            <div class="s-msg-name">${esc(m.senderName)}</div>
                             <div class="s-msg-bubble">
-                                ${m.content ? m.content.replace(/\\n/g, '<br>') : ''}
+                                ${m.content ? esc(m.content).replace(/\\n/g, '<br>') : ''}
                                 ${m.attachmentUrl ? `
                                     <div class="s-attachment">
-                                        📎 <a href="${m.attachmentUrl}" target="_blank">${m.attachmentName || 'Attachment'}</a>
+                                        📎 <a href="${m.attachmentUrl}" target="_blank">${esc(m.attachmentName || 'Attachment')}</a>
                                     </div>
                                 ` : ''}
                             </div>
@@ -657,7 +678,7 @@ window.openSupportTicket = async (ticketId) => {
 
 window.changeTicketStatus = async (ticketId, status) => {
     try {
-        const res = await fetch(`${API}/support/admin/tickets/${ticketId}/status`, {
+        const res = await apiFetch(`${API}/support/admin/tickets/${ticketId}/status`, {
             method: 'PUT',
             headers: headers(),
             body: JSON.stringify({ status })
@@ -681,7 +702,7 @@ window.sendSupportReply = async (ticketId) => {
     if (file) formData.append('attachment', file);
     
     try {
-        const res = await fetch(`${API}/support/admin/tickets/${ticketId}/messages`, {
+        const res = await apiFetch(`${API}/support/admin/tickets/${ticketId}/messages`, {
             method: 'POST',
             headers: { 'Authorization': `Bearer ${token}` },
             body: formData

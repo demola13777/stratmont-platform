@@ -16,6 +16,8 @@
     --sidebar-w: var(--sidebar-width);
     --topbar-h: var(--topbar-height);
     --radius: var(--radius-lg);
+    --muted: var(--text-muted);
+    --text: var(--color-text-primary);
 }
 
 
@@ -920,8 +922,9 @@
 .modal-overlay {
     position: fixed;
     top: 0; left: 0; right: 0; bottom: 0;
-    background: rgba(0, 0, 0, 0.8);
-    backdrop-filter: blur(4px);
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -935,22 +938,103 @@
     pointer-events: all;
 }
 .modal-box {
-    background: var(--bg-card);
-    border: 1px solid rgba(255,255,255,0.1);
-    padding: 2rem;
-    border-radius: 12px;
+    background: rgba(18, 18, 18, 0.95);
+    border: 1px solid rgba(255,255,255,0.08);
+    box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5);
+    padding: 2.5rem;
+    border-radius: 16px;
     width: 90%;
-    max-width: 400px;
-    transform: translateY(20px);
-    transition: transform 0.3s ease;
+    max-width: 440px;
+    transform: translateY(20px) scale(0.95);
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
 [data-theme='light'] .modal-box {
-    border: 1px solid rgba(0,0,0,0.1);
+    background: rgba(255, 255, 255, 0.95);
+    border: 1px solid rgba(0,0,0,0.08);
+    box-shadow: 0 25px 50px -12px rgba(0,0,0,0.1);
 }
 .modal-overlay.active .modal-box {
-    transform: translateY(0);
+    transform: translateY(0) scale(1);
 }
-.modal-title { margin-bottom: 1rem; font-size: 1.25rem; }
+.modal-title { 
+    margin-bottom: 0.5rem; 
+    font-size: 1.5rem; 
+    font-weight: 600;
+    letter-spacing: -0.02em;
+}
+.modal-box .form-group, .modal-box .input-group {
+    margin-bottom: 1.25rem;
+}
+.modal-box label {
+    display: block;
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    margin-bottom: 0.5rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-weight: 600;
+}
+.modal-box input, .modal-box select {
+    width: 100%;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.1);
+    color: var(--text-light);
+    padding: 0.85rem 1rem;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    outline: none;
+    transition: all 0.2s;
+    font-family: inherit;
+}
+.modal-box select {
+    appearance: none;
+    background-image: url('data:image/svg+xml;utf8,<svg fill="none" stroke="%23999" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>');
+    background-repeat: no-repeat;
+    background-position: right 1rem center;
+    background-size: 1rem;
+}
+.modal-box select option {
+    background: var(--bg-card);
+    color: var(--text-light);
+}
+[data-theme='light'] .modal-box input, [data-theme='light'] .modal-box select {
+    background: rgba(0,0,0,0.02);
+    border: 1px solid rgba(0,0,0,0.1);
+    color: var(--text-dark);
+}
+[data-theme='light'] .modal-box select option {
+    background: #fff;
+    color: #000;
+}
+.modal-box input:focus, .modal-box select:focus {
+    border-color: var(--gold);
+    background: rgba(255,255,255,0.05);
+}
+[data-theme='light'] .modal-box input:focus, [data-theme='light'] .modal-box select:focus {
+    background: rgba(0,0,0,0.04);
+}
+.modal-actions {
+    display: flex;
+    gap: 1rem;
+    margin-top: 2rem;
+}
+.modal-actions button {
+    padding: 0.85rem 1.5rem;
+    font-size: 0.95rem;
+    border-radius: 8px;
+    font-weight: 600;
+}
+.modal-actions .btn-gold {
+    background: linear-gradient(135deg, #d4af37, #aa8529);
+    color: #000;
+    border: none;
+    box-shadow: 0 4px 15px rgba(212,175,55,0.2);
+}
+.modal-actions .btn-gold:hover {
+    background: linear-gradient(135deg, #e5be45, #b89230);
+    transform: translateY(-1px);
+    box-shadow: 0 6px 20px rgba(212,175,55,0.3);
+}
 
 /* ─── SUPPORT CENTER LOGIC ─── */
 .support-layout {
@@ -1160,5 +1244,43 @@
     .support-back-btn { display: block; }
     
     [data-theme='light'] .support-detail { background: #fff; }
+}
+
+
+
+/* --- Accessibility & Print Fixes --- */
+button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible, a:focus-visible {
+    outline: 2px solid var(--gold);
+    outline-offset: 2px;
+}
+
+@media print {
+    .sidebar, .topbar, .filter-bar, .pagination-controls, button, .modal, .modal-overlay {
+        display: none !important;
+    }
+    .main-content {
+        margin-left: 0 !important;
+        padding: 0 !important;
+    }
+    .view.active {
+        display: block !important;
+    }
+    body {
+        background: #fff;
+        color: #000;
+    }
+    .data-table {
+        border: 1px solid #ddd;
+    }
+    .data-table th, .data-table td {
+        border-bottom: 1px solid #ddd;
+        color: #000 !important;
+    }
+}
+
+/* --- Keyframes --- */
+@keyframes shimmer-pass {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(100%); }
 }
 

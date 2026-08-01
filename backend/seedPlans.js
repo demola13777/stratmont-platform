@@ -27,7 +27,7 @@ const seedPlans = async () => {
             {
                 name: 'Institutional',
                 minDeposit: 50000,
-                maxDeposit: 150000,
+                maxDeposit: 500000,
                 dailyReturnRate: 3.33,
                 durationDays: 90
             }

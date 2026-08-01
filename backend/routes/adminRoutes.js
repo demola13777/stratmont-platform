@@ -15,11 +15,20 @@ const adminOnly = (req, res, next) => {
 router.get('/users', protect, adminOnly, async (req, res) => {
     try {
         const page = parseInt(req.query.page) || 1;
-        const limit = parseInt(req.query.limit) || 20;
+        const limit = parseInt(req.query.limit) || 5;
         const skip = (page - 1) * limit;
 
-        const total = await User.countDocuments({});
-        const users = await User.find({}).select('-password').sort({ createdAt: -1 }).skip(skip).limit(limit);
+        const query = {};
+        if (req.query.search) {
+            const searchRegex = new RegExp(req.query.search, 'i');
+            query.$or = [
+                { name: searchRegex },
+                { email: searchRegex }
+            ];
+        }
+
+        const total = await User.countDocuments(query);
+        const users = await User.find(query).select('-password').sort({ createdAt: -1 }).skip(skip).limit(limit);
 
         res.json({
             data: users,
@@ -39,7 +48,7 @@ router.get('/users', protect, adminOnly, async (req, res) => {
 router.get('/transactions', protect, adminOnly, async (req, res) => {
     try {
         const page = parseInt(req.query.page) || 1;
-        const limit = parseInt(req.query.limit) || 20;
+        const limit = parseInt(req.query.limit) || 5;
         const skip = (page - 1) * limit;
         const query = {};
         if (req.query.status) query.status = req.query.status;
@@ -47,17 +56,29 @@ router.get('/transactions', protect, adminOnly, async (req, res) => {
         const total = await Transaction.countDocuments(query);
         const txs = await Transaction.find(query)
             .populate('user', 'name email')
-            .sort({ createdAt: -1 })
-            .skip(skip)
-            .limit(limit);
+            .sort({ createdAt: -1 });
+
+        // Apply search filter if provided (since we need to filter by populated user fields)
+        let filteredTxs = txs;
+        if (req.query.search) {
+            const searchLower = req.query.search.toLowerCase();
+            filteredTxs = txs.filter(t => 
+                (t.user && t.user.name && t.user.name.toLowerCase().includes(searchLower)) ||
+                (t.user && t.user.email && t.user.email.toLowerCase().includes(searchLower)) ||
+                (t.txId && t.txId.toLowerCase().includes(searchLower))
+            );
+        }
+        
+        // Manual pagination for filtered results
+        const paginatedTxs = filteredTxs.slice(skip, skip + limit);
 
         res.json({
-            data: txs,
+            data: paginatedTxs,
             pagination: {
                 page,
                 limit,
-                total,
-                totalPages: Math.ceil(total / limit)
+                total: filteredTxs.length,
+                totalPages: Math.ceil(filteredTxs.length / limit)
             }
         });
     } catch (err) {
@@ -75,6 +96,10 @@ router.put('/transactions/:id', protect, adminOnly, async (req, res) => {
 
         const tx = await Transaction.findById(req.params.id).populate('user');
         if (!tx) return res.status(404).json({ message: 'Transaction not found.' });
+
+        if (tx.status !== 'pending') {
+            return res.status(400).json({ message: `Transaction is already ${tx.status} and cannot be processed again.` });
+        }
 
         tx.status = status;
         await tx.save();
@@ -190,11 +215,10 @@ router.get('/stats', protect, adminOnly, async (req, res) => {
     }
 });
 
-// ─── GET AUDIT LOGS ───
-router.get('/audit-logs', protect, adminOnly, async (req, res) => {
+router.get("/audit-logs", protect, adminOnly, async (req, res) => {
     try {
         const page = parseInt(req.query.page) || 1;
-        const limit = parseInt(req.query.limit) || 20;
+        const limit = parseInt(req.query.limit) || 5;
         const skip = (page - 1) * limit;
 
         const AuditLog = require('../models/AuditLog');
@@ -228,9 +252,21 @@ router.put('/users/:id/balance', protect, adminOnly, async (req, res) => {
         
         if (!user) return res.status(404).json({ message: 'User not found' });
 
-        if (availableBalance !== undefined) user.balances.availableBalance = Number(availableBalance);
-        if (totalDeposit !== undefined) user.balances.totalDeposit = Number(totalDeposit);
-        if (totalEarnings !== undefined) user.balances.totalEarnings = Number(totalEarnings);
+        if (availableBalance !== undefined) {
+            const val = Number(availableBalance);
+            if (isNaN(val) || val < 0) return res.status(400).json({ message: 'Invalid available balance value' });
+            user.balances.availableBalance = val;
+        }
+        if (totalDeposit !== undefined) {
+            const val = Number(totalDeposit);
+            if (isNaN(val) || val < 0) return res.status(400).json({ message: 'Invalid total deposit value' });
+            user.balances.totalDeposit = val;
+        }
+        if (totalEarnings !== undefined) {
+            const val = Number(totalEarnings);
+            if (isNaN(val) || val < 0) return res.status(400).json({ message: 'Invalid total earnings value' });
+            user.balances.totalEarnings = val;
+        }
 
         await user.save();
 

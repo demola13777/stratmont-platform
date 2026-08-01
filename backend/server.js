@@ -43,7 +43,12 @@ connectDB(); // Initialize connection
 const path = require('path');
 
 // Routes
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+app.use('/uploads', express.static(path.join(__dirname, 'uploads'), {
+    setHeaders: (res, path) => {
+        res.setHeader('Content-Disposition', 'attachment');
+        res.setHeader('Content-Security-Policy', "default-src 'none'");
+    }
+}));
 app.use('/api/auth', require('./routes/authRoutes'));
 app.use('/api/user', require('./routes/userRoutes'));
 app.use('/api/plans', require('./routes/planRoutes'));
@@ -64,7 +69,7 @@ app.use((err, req, res, next) => {
     const statusCode = res.statusCode === 200 ? 500 : res.statusCode;
     res.status(statusCode).json({
         message: err.message || 'Internal Server Error',
-        stack: process.env.NODE_ENV === 'production' ? null : err.stack,
+        stack: process.env.NODE_ENV === 'development' ? err.stack : null,
     });
 });
 

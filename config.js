@@ -26,7 +26,7 @@
         PLANS: {
             starter: { name: 'Starter', dailyRate: 1.67, totalReturn: 150, minDeposit: 1000, maxDeposit: 9999 },
             professional: { name: 'Professional', dailyRate: 2.22, totalReturn: 200, minDeposit: 10000, maxDeposit: 49999 },
-            institutional: { name: 'Institutional', dailyRate: 3.33, totalReturn: 300, minDeposit: 50000, maxDeposit: 150000 }
+            institutional: { name: 'Institutional', dailyRate: 3.33, totalReturn: 300, minDeposit: 50000, maxDeposit: 500000 }
         },
 
         // Token storage keys
